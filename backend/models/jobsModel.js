@@ -1,19 +1,21 @@
 import mongoose from "mongoose";
 
 const jobsSchema = new mongoose.Schema({
-  company: { type: String, required: true },
-  title: { type: String, required: true }, 
-  location: { type: String, required: true }, 
-  date: { type: String, required: true }, 
-  deadline: { type: String, required: true }, 
-  jobType: { type: String, required: true },
-  jobtiming: { type: String, required: true }, 
-  category: { type: String, required: true }, 
-  salary: { type: String, required: true }, 
-  active: { type: Boolean, default: true },
-  experience: { type: String },
-  workingdays: { type: String },
-  description: { type: String, required: true }, 
+  company: { type: String, required: true },    //Google
+  applicationtype: { type: String, required: true }, //job
+  jobrole: { type: String, required: true },      //Software Developer
+  location: { type: String, required: true },   //Bangalore 
+  postdate: { type: String, required: true },  //11/02/2025
+  deadline: { type: String, required: true },  //11/03/2025
+  jobtype:{ String, required: true },        //Remote 
+  jobtiming: { type: String, required: true }, //Full-time
+  duration: {type : String },  //6 months 
+  category: { type: String, required: true }, //web development
+  salary: { type: String, required: true },  //10k-20k
+  active: { type: Boolean, default: true }, //active
+  experience: { type: String, default:"No experience" },  //No experience required
+  workdays: { type: String, required:true },  //5 days a week
+  responsibilities: { type: String, required: true }, 
   requirements: { type: String, required: true }, 
   recruiter: { type: mongoose.Schema.Types.ObjectId, ref: "recruiter" },
   applicants: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
