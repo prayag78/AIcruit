@@ -12,3 +12,11 @@
 .active hr{
     @apply block
 }
+
+html, body {
+    overflow-x: hidden;
+  }
+  
+::-webkit-scrollbar{
+    @apply hidden
+}

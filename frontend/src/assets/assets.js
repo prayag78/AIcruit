@@ -14,8 +14,13 @@ import resume_icon from "./resume_icon.png";
 import upload_icon from "./upload_up_icon.png";
 import x_icon from "./x_icon.png";
 import profile_icon from "./profile_icon.svg";
-import Hero_img from "./Hero_img.png";
-import wave from "./wave.png";
+import hero_sec from "./hero_sec.svg";
+import wave from "./wave.svg";
+import left from "./left_blurry.svg"
+import right from "./right_blurry.svg"
+import hero_sec2 from './hero_sec2.png'
+import shapes1 from './shapes1.svg'
+import hero_sec3 from './hero_sec3.png'
 
 export const assets = {
   bookmark_icon,
@@ -34,6 +39,11 @@ export const assets = {
   upload_icon,
   x_icon,
   profile_icon,
-  Hero_img,
+  hero_sec,
+  hero_sec2,
+  hero_sec3,
   wave,
+  left,
+  right,
+  shapes1,  
 };

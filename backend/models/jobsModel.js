@@ -7,7 +7,7 @@ const jobsSchema = new mongoose.Schema({
   location: { type: String, required: true },   //Bangalore 
   postdate: { type: String, required: true },  //11/02/2025
   deadline: { type: String, required: true },  //11/03/2025
-  jobtype:{ String, required: true },        //Remote 
+  jobtype:{ type: String, required: true },        //Remote 
   jobtiming: { type: String, required: true }, //Full-time
   duration: {type : String },  //6 months 
   category: { type: String, required: true }, //web development

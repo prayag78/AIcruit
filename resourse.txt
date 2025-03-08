@@ -1,0 +1,3 @@
+text gradient : https://www.reactbits.dev/text-animations/gradient-text
+
+count uP : https://www.reactbits.dev/text-animations/count-up
