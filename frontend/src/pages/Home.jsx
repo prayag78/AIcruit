@@ -67,10 +67,6 @@ const Home = () => {
           <img src={assets.hero_sec3} width={500} />
         </div>
       </div>
-
-      <div>
-        <Footer/>
-      </div>
     </div>
 
 

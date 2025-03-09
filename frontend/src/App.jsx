@@ -8,6 +8,7 @@ import JobsPage from './pages/user/JobsPage'
 import InternshipsPage from './pages/user/InternshipsPage'
 import Pricing from './pages/user/Pricing'
 import ProfilePage from './pages/user/ProfilePage'
+import Footer from './components/Footer'
 const App = () => {
   return (
     <div >
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/profile" element={<ProfilePage/>} />
 
       </Routes>
+      <Footer/>
     
     </div>
   )

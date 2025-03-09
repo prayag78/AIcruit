@@ -21,6 +21,9 @@ import right from "./right_blurry.svg"
 import hero_sec2 from './hero_sec2.png'
 import shapes1 from './shapes1.svg'
 import hero_sec3 from './hero_sec3.png'
+import jobsB from './jobsB.png'
+import Programmer_bro from './Programmer_bro.svg'
+import post_in from './post_in.svg'
 
 export const assets = {
   bookmark_icon,
@@ -45,5 +48,77 @@ export const assets = {
   wave,
   left,
   right,
-  shapes1,  
+  shapes1,
+  jobsB,  
+  Programmer_bro,
+  post_in,
+  
 };
+
+export const jobsB_h = [
+  {
+    "id": 1,
+    "name": "Google",
+    "logo": instagram_icon
+  },
+  {
+    "id": 2,
+    "name": "Microsoft",
+    "logo": instagram_icon
+  },
+  {
+    "id": 3,
+    "name": "Amazon",
+    "logo": linkedin_icon
+  },
+  {
+    "id": 4,
+    "name": "Facebook",
+    "logo": linkedin_icon
+  },
+  {
+    "id": 5,
+    "name": "Apple",
+    "logo": linkedin_icon
+  },
+  {
+    "id": 6,
+    "name": "Netflix",
+    "logo": instagram_icon
+  }
+]
+
+
+
+export const jobsData = [
+  {
+    id: 1,
+    title: "Web Developer",
+    company: "Unnanu Enterprise AI Search",
+    location: "Bengaluru",
+    applicants: 883,
+    daysLeft: 18,
+    jobType: "job",
+    locked: true
+  },
+  {
+    id: 2,
+    title: "Frontend Engineer",
+    company: "Tech Innovators",
+    location: "Remote",
+    applicants: 452,
+    daysLeft: 12,
+    jobType: "job",
+    locked: false
+  },
+  {
+    id: 3,
+    title: "Backend Developer",
+    company: "AI Solutions Pvt Ltd",
+    location: "Hyderabad",
+    applicants: 679,
+    daysLeft: 10,
+    jobType: "job",
+    locked: true
+  }
+];
