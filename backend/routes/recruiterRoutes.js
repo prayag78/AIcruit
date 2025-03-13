@@ -1,11 +1,12 @@
 import express from 'express';
-import { registerRecruiter, loginRecruiter, postJob , getCompanyData , updateCompanyData, getJobs, getJobById,getCompanyJobs , updateJob , changeJobStatus , getCompanyApplications, jobApplicationStatus} from '../controllers/recruiterController.js';
+import { registerRecruiter, loginRecruiter, postJob , getCompanyData , updateCompanyData, getJobs, getJobById,getCompanyJobs , updateJob , changeJobStatus , getCompanyApplications, jobApplicationStatus , sendOtp} from '../controllers/recruiterController.js';
 import authRecruiter from '../middleware/authRecruiter.js';
 
 
 const recruiterRouter = express.Router();
 
 recruiterRouter.post('/register', registerRecruiter);
+recruiterRouter.post('/send-otp', sendOtp);
 recruiterRouter.post('/login', loginRecruiter);
 recruiterRouter.post('/post-job',authRecruiter ,postJob);
 recruiterRouter.get('/jobs' ,getJobs); //get all jobs

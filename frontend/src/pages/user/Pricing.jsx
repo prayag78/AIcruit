@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Check } from "lucide-react";
+import { ImCross  } from "react-icons/im";
+import { FaCheck  } from "react-icons/fa";
 
 const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState("annual");
@@ -102,7 +104,7 @@ const Pricing = () => {
               <ul className="mt-4 space-y-3">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-green-500" />
+                    <FaCheck  className="h-4 w-4 text-gray-500" /> 
                     <span>{feature}</span>
                   </li>
                 ))}

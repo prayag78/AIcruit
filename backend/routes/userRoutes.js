@@ -4,12 +4,13 @@ import upload from '../middleware/multer.js';
 import multer from 'multer';
 
 
-import { registerUser,loginUser,recommendedJobs, getUserData, applyJob, getUserApplications, updateUserData  } from '../controllers/userController.js';
+import { registerUser,loginUser,recommendedJobs, getUserData, applyJob, getUserApplications, updateUserData , sendOTP  } from '../controllers/userController.js';
 import { getJobs } from '../controllers/recruiterController.js';
 
 const userRouter = express.Router();
 
 userRouter.post('/register',registerUser);
+userRouter.post("/send-otp", sendOTP);
 userRouter.post('/login', loginUser);
 userRouter.post('/recommended-jobs',authUser, recommendedJobs);
 userRouter.get('/jobs',authUser, getJobs);

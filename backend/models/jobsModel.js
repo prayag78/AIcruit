@@ -15,6 +15,7 @@ const jobsSchema = new mongoose.Schema({
   active: { type: Boolean, default: true }, //active
   experience: { type: String, default:"No experience" },  //No experience required
   workdays: { type: String, required:true },  //5 days a week
+  description : { type: String, required: true },
   responsibilities: { type: String, required: true }, 
   requirements: { type: String, required: true }, 
   recruiter: { type: mongoose.Schema.Types.ObjectId, ref: "recruiter" },

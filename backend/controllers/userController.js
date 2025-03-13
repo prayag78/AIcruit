@@ -7,49 +7,113 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { v2 as cloudinary } from "cloudinary";
+import nodemailer from "nodemailer";
+
+
+const otpStore = new Map();
+
+const sendOTPEmail = async (email, otp) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Your OTP for Registration",
+    html: `
+      <div style="font-family: Arial, sans-serif; text-align: center;">
+        <h2>Verify Your Email</h2>
+        <p>Your OTP for registration is:</p>
+        <h1 style="color: #1C4980;">${otp}</h1>
+        <p>This OTP will expire in 5 minutes.</p>
+      </div>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+// Send OTP API
+export const sendOTP = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Check all fields
+    if (!name || !email || !password) {
+      return res.json({ success: false, message: "All fields are required" });
+    }
+
+    // Validate email
+    if (!validator.isEmail(email)) {
+      return res.json({ success: false, message: "Invalid email format" });
+    }
+
+    // Validate password strength
+    if (password.length < 8) {
+      return res.json({ success: false, message: "Password must be at least 8 characters" });
+    }
+
+    // Check if user already exists
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return res.json({ success: false, message: "User already exists" });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    otpStore.set(email, { name, password, otp, createdAt: Date.now() });
+
+    // Send OTP email
+    await sendOTPEmail(email, otp);
+
+    res.json({ success: true, message: "OTP sent to email" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
 
 //API to register a user
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, experience, skills, about } = req.body;
+    const { email, otp } = req.body;
 
-    // checking for all data to register user
-    if (!name || !email || !password) {
-      return res.json({ success: false, message: "Missing Details" });
+    // Check email and OTP
+    if (!email || !otp) {
+      return res.json({ success: false, message: "Email and OTP are required" });
     }
 
-    // validating email format
-    if (!validator.isEmail(email)) {
-      return res.json({
-        success: false,
-        message: "Please enter a valid email",
-      });
+    // Get stored OTP details
+    const storedData = otpStore.get(email);
+    if (!storedData) {
+      return res.json({ success: false, message: "OTP expired or not found" });
     }
 
-    // validating strong password
-    if (password.length < 8) {
-      return res.json({
-        success: false,
-        message: "Please enter a strong password",
-      });
+    // Check OTP match
+    if (storedData.otp !== otp) {
+      return res.json({ success: false, message: "Invalid OTP" });
     }
 
-    // hashing user password
-    const salt = await bcrypt.genSalt(10); // the more no. round the more time it will take
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(storedData.password, salt);
 
-    const userData = {
-      name,
+    // Create user in DB
+    const newUser = new userModel({
+      name: storedData.name,
       email,
       password: hashedPassword,
-      experience,
-      skills,
-      about,
-    };
+    });
 
-    const newUser = new userModel(userData);
-    const user = await newUser.save();
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    await newUser.save();
+    otpStore.delete(email); // Remove OTP after successful registration
+
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
 
     res.json({ success: true, token });
   } catch (error) {
