@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import applicationsModel from "../models/applicationsModel.js";
 import nodemailer from "nodemailer";
+import mongoose from "mongoose";
 
 const otpStore = new Map();
 
@@ -49,12 +50,18 @@ export const sendOtp = async (req, res) => {
 
     // Validating email format
     if (!validator.isEmail(email)) {
-      return res.json({ success: false, message: "Please enter a valid email" });
+      return res.json({
+        success: false,
+        message: "Please enter a valid email",
+      });
     }
 
     // Validating strong password
     if (password.length < 8) {
-      return res.json({ success: false, message: "Please enter a strong password" });
+      return res.json({
+        success: false,
+        message: "Please enter a strong password",
+      });
     }
 
     const existingUser = await recruiterModel.findOne({ email });
@@ -64,14 +71,21 @@ export const sendOtp = async (req, res) => {
 
     // Generate OTP
     const otp = generateOTP();
-    
+
     // ✅ Store ALL required details
-    otpStore.set(email, { name, password, company, location, phone, otp, createdAt: Date.now() });
+    otpStore.set(email, {
+      name,
+      password,
+      company,
+      location,
+      phone,
+      otp,
+      createdAt: Date.now(),
+    });
 
     await sendOTPEmail(email, otp);
 
     res.json({ success: true, message: "OTP sent to email" });
-
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -80,7 +94,7 @@ export const sendOtp = async (req, res) => {
 
 export const registerRecruiter = async (req, res) => {
   try {
-    const { email, otp} = req.body;
+    const { email, otp } = req.body;
 
     const user = otpStore.get(email);
     if (!user) {
@@ -112,8 +126,7 @@ export const registerRecruiter = async (req, res) => {
     const token = jwt.sign({ id: recruiter._id }, process.env.JWT_SECRET);
 
     res.json({ success: true, token });
-
-  }catch (error) {
+  } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
@@ -160,37 +173,50 @@ export const loginRecruiter = async (req, res) => {
 
 //post a job
 export const postJob = async (req, res) => {
-  const {
-    company,
-    applicationtype,
-    jobrole,
-    location,
-    deadline,
-    jobType,
-    jobtiming,
-    category,
-    duration,
-    salary,
-    experience,
-    workdays,
-    responsibilities,
-    requirements,
-  } = req.body;
-
   try {
+    const {
+      company,
+      applicationtype,
+      jobrole,
+      location,
+      postdate,
+      deadline,
+      jobtype,
+      jobtiming,
+      category,
+      duration,
+      salary,
+      active,
+      experience,
+      workdays,
+      description,
+      responsibilities,
+      requirements,
+      recruiterId,
+    } = req.body;
+
+    if (!recruiterId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Recruiter ID is required" });
+    }
+
     const newJob = new jobsModel({
       company,
       applicationtype,
       jobrole,
       location,
+      postdate,
       deadline,
-      jobType,
+      jobtype,
       jobtiming,
       category,
       duration,
       salary,
+      active,
       experience,
       workdays,
+      description,
       responsibilities,
       requirements,
       recruiter: recruiterId,
@@ -198,15 +224,17 @@ export const postJob = async (req, res) => {
 
     const job = await newJob.save();
 
-    await recruiterModel.findByIdAndUpdate(
-      recruiterId,
-      { $push: { postedjobs: job._id } },
-      { new: true } // Return the updated document
-    );
+    await mongoose
+      .model("recruiter")
+      .findByIdAndUpdate(
+        recruiterId,
+        { $push: { postedjobs: job._id } },
+        { new: true }
+      );
 
     res.json({ success: true, job });
   } catch (error) {
-    console.log(error);
+    console.error("Error posting job:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -327,7 +355,7 @@ export const changeJobStatus = async (req, res) => {
 export const getJobById = async (req, res) => {
   try {
     const { id } = req.params;
-    // console.log(id);
+    //console.log(id);
 
     const job = await jobsModel
       .findById(id)
@@ -344,17 +372,24 @@ export const getJobById = async (req, res) => {
   }
 };
 
-//update job details__________pending......
+//update job details
 export const updateJob = async (req, res) => {
   try {
+    const { jobId } = req.body; 
+
+    if (!jobId) {
+      return res.status(400).json({
+        success: false,
+        message: "Job ID is required.",
+      });
+    }
     const {
-      jobId,
       company,
       applicationtype,
       jobrole,
       location,
       deadline,
-      jobType,
+      jobtype,
       jobtiming,
       category,
       duration,
@@ -365,7 +400,13 @@ export const updateJob = async (req, res) => {
       requirements,
     } = req.body;
 
-    await jobsModel.findByIdAndUpdate(
+    if (!jobId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Job ID is required" });
+    }
+
+    const updatedJob = await jobsModel.findByIdAndUpdate(
       jobId,
       {
         company,
@@ -373,7 +414,7 @@ export const updateJob = async (req, res) => {
         jobrole,
         location,
         deadline,
-        jobType,
+        jobtype,
         jobtiming,
         category,
         duration,
@@ -383,11 +424,20 @@ export const updateJob = async (req, res) => {
         responsibilities,
         requirements,
       },
-      { new: true }
+      { new: true, runValidators: true }
     );
-    res.json({ success: true, message: "Job details successfully Updated" });
+
+    if (!updatedJob) {
+      return res.status(404).json({ success: false, message: "Job not found" });
+    }
+
+    res.json({
+      success: true,
+      message: "Job details successfully updated",
+      job: updatedJob,
+    });
   } catch (error) {
-    console.log(error);
+    console.log("Error updating job:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -409,7 +459,7 @@ export const getCompanyApplications = async (req, res) => {
   }
 };
 
-//job application status
+//job application statu
 export const jobApplicationStatus = async (req, res) => {
   try {
     const { id, status } = req.body;

@@ -17,6 +17,6 @@ recruiterRouter.get('/company-data',authRecruiter ,getCompanyData);
 recruiterRouter.put('/company-details',authRecruiter ,updateCompanyData);
 recruiterRouter.get('/get-applicants',authRecruiter ,getCompanyApplications);
 recruiterRouter.put('/change-status',authRecruiter , jobApplicationStatus);
-// recruiterRouter.get('/update-job',authRecruiter ,updateJob);
+recruiterRouter.put('/update-job',authRecruiter ,updateJob);
 
 export default recruiterRouter;

@@ -9,7 +9,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { v2 as cloudinary } from "cloudinary";
 import nodemailer from "nodemailer";
 
-
 const otpStore = new Map();
 
 const sendOTPEmail = async (email, otp) => {
@@ -55,7 +54,10 @@ export const sendOTP = async (req, res) => {
 
     // Validate password strength
     if (password.length < 8) {
-      return res.json({ success: false, message: "Password must be at least 8 characters" });
+      return res.json({
+        success: false,
+        message: "Password must be at least 8 characters",
+      });
     }
 
     // Check if user already exists
@@ -85,7 +87,10 @@ export const registerUser = async (req, res) => {
 
     // Check email and OTP
     if (!email || !otp) {
-      return res.json({ success: false, message: "Email and OTP are required" });
+      return res.json({
+        success: false,
+        message: "Email and OTP are required",
+      });
     }
 
     // Get stored OTP details
@@ -162,10 +167,11 @@ export const loginUser = async (req, res) => {
 };
 
 //API for recomanded jobs
+
 export const recommendedJobs = async (req, res) => {
   try {
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const userId = req.userId;
     const userDetails = await userModel.findById(
@@ -177,16 +183,21 @@ export const recommendedJobs = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Debug: Log the user details
+    console.log("User Details:", userDetails);
+
+    // Fetch jobs where applicationtype is "job"
     const jobs = await jobsModel.find(
-      {},
-      {
-        title: 1,
-        requirements: 1,
-        salary: 1,
-        location: 1,
-        _id: 1,
-      }
+      { applicationtype: "job" },
+      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 }
     );
+
+    // Debug: Log the jobs fetched from the database
+    console.log("Jobs fetched from DB:", jobs);
+
+    if (jobs.length === 0) {
+      return res.status(404).json({ message: "No job openings found" });
+    }
 
     const formattedUserDetails = JSON.stringify({
       experience: userDetails.experience,
@@ -196,9 +207,12 @@ export const recommendedJobs = async (req, res) => {
 
     const formattedJobs = JSON.stringify(jobs);
 
+    // Debug: Log the formatted jobs
+    console.log("Formatted Jobs:", formattedJobs);
+
     const prompt = `
       You are a job matching expert. Analyze the following user profile and job listings to find the top 3 most relevant matches.
-      
+
       User Profile:
       ${formattedUserDetails}
 
@@ -206,60 +220,197 @@ export const recommendedJobs = async (req, res) => {
       ${formattedJobs}
 
       Instructions:
-      1. Analyze the user's skills, experience, and background
-      2. Compare with each job's requirements
-      3. Select the top 3 most relevant matches
+      1. Analyze the user's skills, experience, and background.
+      2. Compare with each job's requirements.
+      3. Select the top 3 most relevant matches.
       4. Return ONLY a JSON array without any markdown formatting, code blocks, or additional text. The array should have this exact structure:
       [
         {
           "jobId": "_id from the original job",
-          "title": "job title",
-          "requirements": "job requirements",
-          "matchScore": "percentage match (number between 0-100)",
-          "matchReason": "brief explanation of why this job matches"
+          "matchScore": "percentage match (number between 0-100)"
         }
       ]
-      
+
       Important: Do not include any markdown formatting, code blocks, or additional text in your response. Return only the raw JSON array.
     `;
 
     const result = await model.generateContent(prompt);
     const response = result.response;
 
+    // Debug: Log the raw AI response
+    console.log("Raw AI Response:", response.text());
+
     // Clean and parse the AI response
-    let responseText = response.text();
+    let responseText = response
+      .text()
+      .trim()
+      .replace(/```json\n?|```\n?/g, "");
 
-    // Remove markdown code block formatting if present
-    responseText = responseText
-      .replace(/```json\n?/g, "")
-      .replace(/```\n?/g, "");
-
-    // Remove any leading/trailing whitespace
-    responseText = responseText.trim();
+    // Debug: Log the cleaned AI response
+    console.log("Cleaned AI Response:", responseText);
 
     let recommendedJobs;
     try {
       recommendedJobs = JSON.parse(responseText);
 
-      // Validate the response structure
       if (!Array.isArray(recommendedJobs)) {
         throw new Error("Response is not an array");
       }
 
-      // Validate each recommendation object
-      recommendedJobs = recommendedJobs.map((job) => ({
-        jobId: job.jobId || "",
-        title: job.title || "",
-        requirements: job.requirements || "",
-        matchScore:
-          typeof job.matchScore === "number"
-            ? job.matchScore
-            : parseInt(job.matchScore) || 0,
-        matchReason: job.matchReason || "",
-      }));
+      recommendedJobs = recommendedJobs.map((job) => {
+        const matchedJob = jobs.find((j) => j._id.toString() === job.jobId);
+
+        let matchReason = "";
+        if (job.matchScore >= 80) {
+          matchReason = `🔥 You're a perfect fit for this job! Your skills align well, and this is a great opportunity to level up your career. Go for it! 🚀`;
+        } else if (job.matchScore >= 60) {
+          matchReason = `👌 You match well with this job, but consider improving some skills to stand out. Keep pushing forward!`;
+        } else {
+          matchReason = `💡 This job might be a challenge, but don't be discouraged! Keep learning, and soon you'll land the perfect role. Keep grinding!`;
+        }
+
+        return {
+          jobId: job.jobId,
+          company: matchedJob?.company || "Unknown",
+          applicationtype: matchedJob?.applicationtype || "Unknown",
+          jobrole: matchedJob?.jobrole || "Unknown",
+          matchScore: job.matchScore,
+          matchReason,
+        };
+      });
     } catch (error) {
       console.error("Error parsing AI response:", error);
-      console.log("Raw response:", responseText); // For debugging
+      return res.status(500).json({
+        message: "Error processing AI recommendations",
+        error: error.message,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      recommendations: recommendedJobs,
+    });
+  } catch (error) {
+    console.error("Error in recommendedJobs:", error);
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+export const recommendedInternships = async (req, res) => {
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    const userId = req.userId;
+    const userDetails = await userModel.findById(
+      userId,
+      "experience skills about"
+    );
+
+    if (!userDetails) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Debug: Log the user details
+    console.log("User Details:", userDetails);
+
+    // Fetch jobs where applicationtype is "job"
+    const jobs = await jobsModel.find(
+      { applicationtype: "internship" },
+      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 }
+    );
+
+    // Debug: Log the jobs fetched from the database
+    console.log("Jobs fetched from DB:", jobs);
+
+    if (jobs.length === 0) {
+      return res.status(404).json({ message: "No job openings found" });
+    }
+
+    const formattedUserDetails = JSON.stringify({
+      experience: userDetails.experience,
+      skills: userDetails.skills,
+      about: userDetails.about,
+    });
+
+    const formattedJobs = JSON.stringify(jobs);
+
+    // Debug: Log the formatted jobs
+    console.log("Formatted Jobs:", formattedJobs);
+
+    const prompt = `
+      You are a job matching expert. Analyze the following user profile and job listings to find the top 3 most relevant matches.
+
+      User Profile:
+      ${formattedUserDetails}
+
+      Available Jobs:
+      ${formattedJobs}
+
+      Instructions:
+      1. Analyze the user's skills, experience, and background.
+      2. Compare with each job's requirements.
+      3. Select the top 3 most relevant matches.
+      4. Return ONLY a JSON array without any markdown formatting, code blocks, or additional text. The array should have this exact structure:
+      [
+        {
+          "jobId": "_id from the original job",
+          "matchScore": "percentage match (number between 0-100)"
+        }
+      ]
+
+      Important: Do not include any markdown formatting, code blocks, or additional text in your response. Return only the raw JSON array.
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+
+    // Debug: Log the raw AI response
+    console.log("Raw AI Response:", response.text());
+
+    // Clean and parse the AI response
+    let responseText = response
+      .text()
+      .trim()
+      .replace(/```json\n?|```\n?/g, "");
+
+    // Debug: Log the cleaned AI response
+    console.log("Cleaned AI Response:", responseText);
+
+    let recommendedJobs;
+    try {
+      recommendedJobs = JSON.parse(responseText);
+
+      if (!Array.isArray(recommendedJobs)) {
+        throw new Error("Response is not an array");
+      }
+
+      recommendedJobs = recommendedJobs.map((job) => {
+        const matchedJob = jobs.find((j) => j._id.toString() === job.jobId);
+
+        let matchReason = "";
+        if (job.matchScore >= 80) {
+          matchReason = `🔥 You're a perfect fit for this job! Your skills align well, and this is a great opportunity to level up your career. Go for it! 🚀`;
+        } else if (job.matchScore >= 60) {
+          matchReason = `👌 You match well with this job, but consider improving some skills to stand out. Keep pushing forward!`;
+        } else {
+          matchReason = `💡 This job might be a challenge, but don't be discouraged! Keep learning, and soon you'll land the perfect role. Keep grinding!`;
+        }
+
+        return {
+          jobId: job.jobId,
+          company: matchedJob?.company || "Unknown",
+          applicationtype: matchedJob?.applicationtype || "Unknown",
+          jobrole: matchedJob?.jobrole || "Unknown",
+          matchScore: job.matchScore,
+          matchReason,
+        };
+      });
+    } catch (error) {
+      console.error("Error parsing AI response:", error);
       return res.status(500).json({
         message: "Error processing AI recommendations",
         error: error.message,
@@ -282,7 +433,7 @@ export const recommendedJobs = async (req, res) => {
 //get user data
 export const getUserData = async (req, res) => {
   try {
-    const  userId  = req.userId;
+    const userId = req.userId;
     const user = await userModel.findById(userId).select("-password");
     if (!user) {
       return res.json({ success: false, message: "User not found" });
@@ -363,9 +514,64 @@ export const getUserApplications = async (req, res) => {
 };
 
 //Update user data           ....need to verify
+// export const updateUserData = async (req, res) => {
+//   try {
+//     const userId = req.userId;
+//     const {
+//       name,
+//       experience,
+//       skills,
+//       about,
+//       institute,
+//       education,
+//       dob,
+//     } = req.body;
+
+//     const imageFile = req.file; // This will contain the uploaded file
+
+//     if (!userId) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "User ID is required." });
+//     }
+
+//     // Update user data (excluding the image)
+//     await userModel.findByIdAndUpdate(userId, {
+//       name,
+//       experience,
+//       skills,
+//       about,
+//       institute,
+//       education,
+//       dob,
+//     });
+
+//     // If an image file is uploaded, upload it to Cloudinary and update the user's image URL
+//     if (imageFile) {
+//       const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+//         resource_type: "image",
+//       });
+//       const imageURL = imageUpload.secure_url;
+
+//       await userModel.findByIdAndUpdate(userId, { image: imageURL });
+//     }
+
+//     res.json({ success: true, message: "Profile Updated" });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
 export const updateUserData = async (req, res) => {
   try {
     const userId = req.userId;
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID is required." });
+    }
+
     const {
       name,
       experience,
@@ -374,38 +580,62 @@ export const updateUserData = async (req, res) => {
       institute,
       education,
       dob,
+      sociallink1,
+      sociallink2,
+      sociallink3,
+      sociallink4,
     } = req.body;
+    const imageFile = req.file;
 
-    const imageFile = req.file; // This will contain the uploaded file
-
-    if (!userId) {
+    // Fetch current user data
+    const existingUser = await userModel.findById(userId);
+    if (!existingUser) {
       return res
-        .status(400)
-        .json({ success: false, message: "User ID is required." });
+        .status(404)
+        .json({ success: false, message: "User not found." });
     }
 
-    // Update user data (excluding the image)
-    await userModel.findByIdAndUpdate(userId, {
+    let updatedFields = {
       name,
       experience,
-      skills,
       about,
       institute,
       education,
       dob,
-    });
+      sociallink1,
+      sociallink2,
+      sociallink3,
+      sociallink4,
+    };
 
-    // If an image file is uploaded, upload it to Cloudinary and update the user's image URL
+    // Convert skills to an array if it is a string
+    if (skills) {
+      updatedFields.skills = Array.isArray(skills) ? skills : skills.split(",");
+    }
+
+    // Handle image update
     if (imageFile) {
+      if (existingUser.image && existingUser.image !== "") {
+        // Delete old image from Cloudinary
+        const publicId = existingUser.image.split("/").pop().split(".")[0]; // Extract public ID
+        await cloudinary.uploader.destroy(publicId);
+      }
+
+      // Upload new image
       const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
         resource_type: "image",
       });
-      const imageURL = imageUpload.secure_url;
-
-      await userModel.findByIdAndUpdate(userId, { image: imageURL });
+      updatedFields.image = imageUpload.secure_url;
     }
 
-    res.json({ success: true, message: "Profile Updated" });
+    // Update user in DB
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      updatedFields,
+      { new: true }
+    );
+
+    res.json({ success: true, message: "Profile Updated", user: updatedUser });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ success: false, message: error.message });
@@ -426,8 +656,8 @@ export const uploadResume = async (req, res) => {
 
     const userData = await userModel.findById(userId);
 
-    if(resumeFile){
-      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path)
+    if (resumeFile) {
+      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path);
       userData.resume = resumeUpload.secure_url;
     }
 

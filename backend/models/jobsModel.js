@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const jobsSchema = new mongoose.Schema({
   company: { type: String, required: true },    //Google
-  applicationtype: { type: String, required: true }, //job
+  applicationtype: { type: String, required: true, enum: ["job", "internship"] },
   jobrole: { type: String, required: true },      //Software Developer
   location: { type: String, required: true },   //Bangalore 
-  postdate: { type: String, required: true },  //11/02/2025
-  deadline: { type: String, required: true },  //11/03/2025
+  postdate: { type: String, required: true },  
+  deadline: { type: String, required: true }, 
   jobtype:{ type: String, required: true },        //Remote 
   jobtiming: { type: String, required: true }, //Full-time
   duration: {type : String },  //6 months 
