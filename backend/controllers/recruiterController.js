@@ -1,4 +1,5 @@
 import recruiterModel from "../models/recruiterModel.js";
+import userModel from "../models/userModel.js";
 import jobsModel from "../models/jobsModel.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
@@ -6,6 +7,7 @@ import jwt from "jsonwebtoken";
 import applicationsModel from "../models/applicationsModel.js";
 import nodemailer from "nodemailer";
 import mongoose from "mongoose";
+import sendEmail from "../utils/emails.js";
 
 const otpStore = new Map();
 
@@ -304,7 +306,7 @@ export const getCompanyJobs = async (req, res) => {
 //change job status
 export const changeJobStatus = async (req, res) => {
   try {
-    const { jobId } = req.body; // Job ID from request body
+    const { jobId } = req.body;
     const recruiterId = req.body.recruiterId;
 
     if (!jobId) {
@@ -459,18 +461,76 @@ export const getCompanyApplications = async (req, res) => {
   }
 };
 
-//job application statu
-export const jobApplicationStatus = async (req, res) => {
+//get all aplicants for a job
+export const getJobApplicants = async (req, res) => {
   try {
-    const { id, status } = req.body;
+    const { jobId } = req.body;
 
-    await applicationsModel.findOneAndUpdate({ _id: id }, { status });
+    const applications = await applicationsModel
+      .find({ jobId })
+      .populate("userId", "name image resume");
 
-    res.json({
-      success: true,
-      message: "Application status updated successfully",
-    });
+    res.json({ success: true, applications });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+//accept or reject an application
+
+export const acceptRejectApplication = async (req, res) => {
+  try {
+    const recruiterId = req.body.recruiterId;
+    const { applicationId, status } = req.body;
+
+    if (!applicationId || !status) {
+      return res.status(400).json({ success: false, message: "Application ID and status are required." });
+    }
+
+    // Validate status
+    if (status.toLowerCase() !== "accepted" && status.toLowerCase() !== "rejected") {
+      return res.status(400).json({ success: false, message: "Invalid status. Must be 'accepted' or 'rejected'." });
+    }
+
+    // Find application with related job and user details
+    const application = await applicationsModel.findById(applicationId).populate("jobId userId");
+
+    if (!application) {
+      return res.status(404).json({ success: false, message: "Application not found." });
+    }
+
+    // Ensure the application is still pending
+    if (application.status !== "pending") {
+      return res.status(400).json({ success: false, message: "This application is already processed." });
+    }
+
+    const job = await jobsModel.findById(application.jobId);
+    if (!job || job.recruiter.toString() !== recruiterId) {
+      return res.status(403).json({ success: false, message: "Unauthorized action." });
+    }
+
+    // Update application status
+    application.status = "closed";
+    await application.save();
+
+    // If accepted, deactivate the job
+    if (status.toLowerCase() === "accepted") {
+      job.active = false;
+      await job.save();
+    }
+
+    // Fetch user details
+    const user = await userModel.findById(application.userId);
+
+    // Send acceptance/rejection email
+    await sendEmail(user.email, status, job.jobrole, job.company);
+
+    return res.status(200).json({
+      success: true,
+      message: `Application ${status.toLowerCase()} successfully. Email sent to ${user.email}.`,
+    });
+  } catch (error) {
+    console.error("Error updating application status:", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };

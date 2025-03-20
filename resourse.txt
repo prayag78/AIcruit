@@ -1,3 +1,12 @@
 text gradient : https://www.reactbits.dev/text-animations/gradient-text
 
 count uP : https://www.reactbits.dev/text-animations/count-up
+
+{
+  "name": "JohnNew3",
+  "email": "foraitools2023@gmail.com",
+  "password": "foraitools20232123",
+  "company": "JohnNew Inc.",
+  "location": "San Francisco, CA",
+  "phone": "9999999999"
+}

@@ -1,5 +1,6 @@
 import express from 'express';
-import { registerRecruiter, loginRecruiter, postJob , getCompanyData , updateCompanyData, getJobs, getJobById,getCompanyJobs , updateJob , changeJobStatus , getCompanyApplications, jobApplicationStatus , sendOtp} from '../controllers/recruiterController.js';
+import { registerRecruiter, loginRecruiter, postJob, getCompanyData, updateCompanyData, getJobs, getJobById, getCompanyJobs, updateJob, changeJobStatus, getCompanyApplications, sendOtp} from '../controllers/recruiterController.js';
+import {acceptRejectApplication} from '../controllers/recruiterController.js';
 import authRecruiter from '../middleware/authRecruiter.js';
 
 
@@ -16,7 +17,7 @@ recruiterRouter.get('/job/:id', getJobById);  //get job by id                 ne
 recruiterRouter.get('/company-data',authRecruiter ,getCompanyData);
 recruiterRouter.put('/company-details',authRecruiter ,updateCompanyData);
 recruiterRouter.get('/get-applicants',authRecruiter ,getCompanyApplications);
-recruiterRouter.put('/change-status',authRecruiter , jobApplicationStatus);
 recruiterRouter.put('/update-job',authRecruiter ,updateJob);
+recruiterRouter.post('/accept-reject',authRecruiter ,acceptRejectApplication);
 
 export default recruiterRouter;
