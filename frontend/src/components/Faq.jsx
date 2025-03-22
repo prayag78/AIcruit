@@ -30,10 +30,11 @@ const Faq = () => {
   };
 
   return (
-    <div className="flex h-[85vh] bg-[#2b3343] text-white pt-3">``
-      <div className="w-1/2 mx-auto m-4 p-4">
-        <h1 className="text-5xl mb-6 text-left">Why HireMe</h1>
-        <p className=" text-[22px] m-2 mb-4">
+    <div className="flex flex-col lg:flex-row h-auto lg:h-[85vh] bg-[#2b3343] text-white pt-3">
+      {/* Left Section - FAQ */}
+      <div className="w-full lg:w-1/2 mx-auto m-4 p-4">
+        <h1 className="text-3xl lg:text-5xl mb-6 text-left">Why HireMe</h1>
+        <p className="text-lg lg:text-[22px] m-2 mb-4">
           Great talent teams deserve a great platform. That’s why we built a
           single AI platform that does it all:
         </p>
@@ -68,10 +69,15 @@ const Faq = () => {
         </div>
       </div>
 
-      <div className="w-5/12 mt-6 relative h-[45vh]">
+      {/* Right Section - Image (Hidden on small screens) */}
+      <div className="hidden lg:block w-5/12 mt-6 relative h-[45vh]">
         <div className="bg-blue2 w-3/4 h-60 absolute right-0 top-[60%] rounded-tl-[100px] rounded-bl-[100px] z-0"></div>
-
-        <img src={assets.hero_sec2} width={550} className="relative z-10" />
+        <img
+          src={assets.hero_sec2}
+          alt="AI-Powered Job Matching Illustration"
+          width={550}
+          className="relative z-10"
+        />
       </div>
     </div>
   );

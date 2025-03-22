@@ -77,19 +77,18 @@ const Testimonials = () => {
             <QuoteIcon className="w-12 h-12" />
           </div>
 
-          {/* Testimonials grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Testimonials container */}
+          <div className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-3 gap-6">
             {visibleTestimonials.map((testimonial) => (
               <div
                 key={testimonial.id}
-                className="bg-white rounded-lg p-6 shadow-sm relative"
+                className="flex-shrink-0 w-full md:w-auto snap-center bg-white rounded-lg p-6 shadow-sm relative"
+                style={{ minWidth: "300px" }} // Set a minimum width for each testimonial
               >
                 <div className="text-[#2770d5] font-medium mb-4 block">
                   {testimonial.review}
                 </div>
-                <p className="text-[#8e8e8e] mb-6 text-xs">
-                  {testimonial.text}
-                </p>
+                <p className="text-[#8e8e8e] mb-6 text-xs">{testimonial.text}</p>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-[#d9d9d9] overflow-hidden">
                     <img
@@ -99,7 +98,7 @@ const Testimonials = () => {
                     />
                   </div>
                   <div>
-                    <div className="font-medium"> {testimonial.name}</div>
+                    <div className="font-medium">{testimonial.name}</div>
                     <div className="text-sm text-[#8e8e8e]">
                       {testimonial.role}
                     </div>
@@ -109,8 +108,8 @@ const Testimonials = () => {
             ))}
           </div>
 
-          {/* Navigation dots */}
-          <div className="flex justify-center gap-2 mt-8">
+          {/* Navigation dots (hidden on small screens) */}
+          <div className="hidden md:flex justify-center gap-2 mt-8">
             {[...Array(slidesCount)].map((key, index) => (
               <button
                 key={index}

@@ -24,6 +24,8 @@ import hero_sec3 from './hero_sec3.png'
 import jobsB from './jobsB.png'
 import Programmer_bro from './Programmer_bro.svg'
 import post_in from './post_in.svg'
+import jobseeker from './jobseeker.png'
+import recruiter from './recruiter.png'
 
 export const assets = {
   bookmark_icon,
@@ -52,6 +54,8 @@ export const assets = {
   jobsB,  
   Programmer_bro,
   post_in,
+  jobseeker,
+  recruiter,
   
 };
 
@@ -87,8 +91,6 @@ export const jobsB_h = [
     "logo": instagram_icon
   }
 ]
-
-
 
 export const jobsData = [
   {
