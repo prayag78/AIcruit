@@ -6,7 +6,6 @@ import Testimonials from "../components/Testimonials";
 import Footer from "../components/Footer";
 
 const Home = () => {
-
   return (
     <div className="relative overflow-hidden bg-white">
       {/* Hero Section */}
@@ -46,19 +45,20 @@ const Home = () => {
             Maximize your job search potential and increase your chances of
             getting hired today!
           </p>
-          <button className="inline-flex items-center rounded-full bg-blue2 px-6 py-2 sm:px-8 sm:py-3 text-lg sm:text-xl text-white hover:bg-blue2/90 mx-auto lg:ml-3">
-          Find Now
+          <button
+            className="inline-flex items-center rounded-full bg-blue2 px-6 py-2 sm:px-8 sm:py-3 text-lg sm:text-xl text-white hover:bg-blue2/90 mx-auto lg:ml-3"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            Find Now
           </button>
-
         </div>
         <div className="lg:flex w-full lg:w-3/5 justify-center mt-10">
-        <img
-          src={assets.hero_sec3}
-          alt="Job Search Illustration"
-          className="w-full max-w-[500px]"
-        />
-      </div>
-
+          <img
+            src={assets.hero_sec3}
+            alt="Job Search Illustration"
+            className="w-full max-w-[500px]"
+          />
+        </div>
       </div>
     </div>
   );

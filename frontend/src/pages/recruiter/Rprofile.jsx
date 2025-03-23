@@ -1,9 +1,23 @@
-import React from 'react'
+import React, { useContext } from "react"; 
+import { AppContext } from "../../context/AppContext";
+import { Navigate, useNavigate } from "react-router-dom"; 
 
 const Rprofile = () => {
-  return (
-    <div>Rprofile</div>
-  )
-}
+  const { token, setToken } = useContext(AppContext);
+  const navigate = useNavigate(); 
 
-export default Rprofile
+  const logout = () => {
+    setToken("");
+    localStorage.removeItem("token");
+    navigate("/recruiter-login");
+  };
+
+  return (
+    <div>
+      <h1>Recruiter Profile</h1>
+      <button onClick={logout}>Logout</button>
+    </div>
+  );
+};
+
+export default Rprofile;

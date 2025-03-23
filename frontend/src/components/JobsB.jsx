@@ -1,8 +1,15 @@
 import React from "react";
 import { assets } from "../assets/assets";
 import { jobsB_h } from "../assets/assets";
+import { useNavigate } from "react-router-dom";
 
 const JobsB = () => {
+  const navigate = useNavigate();
+
+  const handleFindJobs = () => {
+    navigate("/portal?applicationtype=job"); // Redirect with job filter
+  };
+
   return (
     <div className="flex flex-col ">
       <div className="flex justify-around items-center px-6 py-12 bg-white m-10">
@@ -14,10 +21,10 @@ const JobsB = () => {
             Connect with the best companies and secure your ideal role
           </p>
           <div className="flex justify-start space-x-4 mt-3">
-            <button className="inline-flex items-center rounded-full bg-blue2 px-8 py-2 text-base font-medium text-white hover:bg-blue2/90">
+            <button onClick={handleFindJobs} className="inline-flex items-center rounded-full bg-blue2 px-8 py-2 text-base font-medium text-white hover:bg-blue2/90">
               Find Jobs
             </button>
-            <button className="inline-flex items-center rounded-full bg-white px-8 py-2 text-base font-medium text-blue2 border-2 border-blue2">
+            <button onClick={()=> navigate("/recruiter-login")} className="inline-flex items-center rounded-full bg-white px-8 py-2 text-base font-medium text-blue2 border-2 border-blue2">
               Post Jobs
             </button>
           </div>
