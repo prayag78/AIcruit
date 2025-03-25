@@ -12,7 +12,7 @@ const JobsB = () => {
 
   return (
     <div className="flex flex-col ">
-      <div className="flex justify-around items-center px-6 py-12 bg-white m-10">
+      <div className="flex justify-around items-center px-6  bg-white m-10">
         <div className="flex flex-col justify-start max-w-md ">
           <p className="text-xl tracking-tight sm:text-5xl lg:text-5xl">
             Your Dream Job Is Just a Click Away

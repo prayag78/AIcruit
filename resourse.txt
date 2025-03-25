@@ -10,3 +10,75 @@ count uP : https://www.reactbits.dev/text-animations/count-up
   "location": "San Francisco, CA",
   "phone": "9999999999"
 }
+
+
+import React, { useState } from "react";
+import axios from "axios";
+
+function App() {
+  const [file, setFile] = useState(null);
+  const [parsedData, setParsedData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      setError("Please upload a resume file.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setParsedData(null);
+
+    const formData = new FormData();
+    formData.append("resume", file);
+
+    try {
+      const response = await axios.post("http://localhost:5000/parse", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setParsedData(response.data);
+    } catch (error) {
+      setError("Failed to parse resume. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h2>Resume Parser</h2>
+      <input type="file" onChange={handleFileChange} accept=".pdf" />
+      <button onClick={handleUpload} style={{ marginLeft: "10px" }}>Upload</button>
+
+      {loading && <p>Parsing resume...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {parsedData && (
+        <div style={{ textAlign: "left", marginTop: "20px", padding: "10px", border: "1px solid #ccc" }}>
+          <h3>Extracted Resume Data:</h3>
+          <p><strong>Name:</strong> {parsedData.name}</p>
+          <p><strong>Email:</strong> {parsedData.email}</p>
+          <p><strong>Phone:</strong> {parsedData.phone}</p>
+          <p><strong>Skills:</strong> {parsedData.skills.join(", ")}</p>
+          <h4>Experience:</h4>
+          <ul>
+            {parsedData.experience.map((exp, index) => (
+              <li key={index}>
+                {exp.position} at {exp.company} ({exp.years})
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;

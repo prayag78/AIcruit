@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { jobsData } from "../assets/assets";
 import { assets } from "../assets/assets";
 import { Lock, Unlock, MapPin, Users, Calendar } from "lucide-react";
+import { AppContext } from "../context/AppContext";
 
 const Jobs_R = () => {
+  const { utoken } = useContext(AppContext);
+
   return (
     <div className="p-8 m-8 flex flex-col">
       {/* Best Jobs Section */}
-      
       <div className="m-10">
         <h2 className="text-2xl font-semibold">Best Jobs For You</h2>
         <p className="text-gray-600">
@@ -22,7 +24,11 @@ const Jobs_R = () => {
             >
               <div className="flex">
                 <div className="m-2 ">
-                  <img src={assets.instagram_icon} width="50" />
+                  <img
+                    src={assets.instagram_icon}
+                    width="50"
+                    alt="Company Logo"
+                  />
                 </div>
                 <div className="space-y-2 mt-2">
                   <p className="text-sm text-gray-500">{job.jobType}</p>
@@ -49,7 +55,8 @@ const Jobs_R = () => {
       <div className="m-10">
         <h2 className="text-2xl font-semibold">Explore Other Jobs</h2>
         <p className="text-gray-600">
-        Discover more opportunities that might interest you based on your profile.
+          Discover more opportunities that might interest you based on your
+          profile.
         </p>
         <div className="grid grid-cols-3 gap-6 mt-6">
           {jobsData.map((job) => (
@@ -59,7 +66,11 @@ const Jobs_R = () => {
             >
               <div className="flex">
                 <div className="m-2 ">
-                  <img src={assets.instagram_icon} width="50" />
+                  <img
+                    src={assets.instagram_icon}
+                    width="50"
+                    alt="Company Logo"
+                  />
                 </div>
                 <div className="space-y-2 mt-2">
                   <p className="text-sm text-gray-500">{job.jobType}</p>
@@ -81,7 +92,6 @@ const Jobs_R = () => {
           ))}
         </div>
       </div>
-      
     </div>
   );
 };

@@ -514,49 +514,77 @@ export const getUserApplications = async (req, res) => {
 };
 
 //Update user data           ....need to verify
+
 // export const updateUserData = async (req, res) => {
 //   try {
 //     const userId = req.userId;
-//     const {
-//       name,
-//       experience,
-//       skills,
-//       about,
-//       institute,
-//       education,
-//       dob,
-//     } = req.body;
-
-//     const imageFile = req.file; // This will contain the uploaded file
-
 //     if (!userId) {
 //       return res
 //         .status(400)
 //         .json({ success: false, message: "User ID is required." });
 //     }
 
-//     // Update user data (excluding the image)
-//     await userModel.findByIdAndUpdate(userId, {
+//     const {
 //       name,
 //       experience,
 //       skills,
 //       about,
+//       phone,
 //       institute,
 //       education,
 //       dob,
-//     });
+//       sociallink1,
+//       sociallink2,
+//       sociallink3,
+//       sociallink4,
+//     } = req.body;
 
-//     // If an image file is uploaded, upload it to Cloudinary and update the user's image URL
-//     if (imageFile) {
-//       const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-//         resource_type: "image",
-//       });
-//       const imageURL = imageUpload.secure_url;
+//     const imageFile = req.file;
 
-//       await userModel.findByIdAndUpdate(userId, { image: imageURL });
+//     // Fetch current user data
+//     const existingUser = await userModel.findById(userId);
+//     if (!existingUser) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "User not found." });
 //     }
 
-//     res.json({ success: true, message: "Profile Updated" });
+//     let updatedFields = {
+//       name,
+//       experience,
+//       about,
+//       phone,
+//       institute,
+//       education,
+//       dob,
+//       sociallink1,
+//       sociallink2,
+//       sociallink3,
+//       sociallink4,
+//     };
+
+//     // Convert skills to an array if it is a string
+//     if (skills) {
+//       updatedFields.skills = Array.isArray(skills) ? skills : skills.split(",");
+//     }
+
+//     if (imageFile) {
+
+//       // upload image to cloudinary
+//       const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" })
+//       const imageURL = imageUpload.secure_url
+
+//       await userModel.findByIdAndUpdate(userId, { image: imageURL })
+//   }
+
+//     // Update user in DB
+//     const updatedUser = await userModel.findByIdAndUpdate(
+//       userId,
+//       updatedFields,
+//       { new: true }
+//     );
+
+//     res.json({ success: true, message: "Profile Updated", user: updatedUser });
 //   } catch (error) {
 //     console.error("Error:", error);
 //     res.status(500).json({ success: false, message: error.message });
@@ -567,9 +595,7 @@ export const updateUserData = async (req, res) => {
   try {
     const userId = req.userId;
     if (!userId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User ID is required." });
+      return res.status(400).json({ success: false, message: "User ID is required." });
     }
 
     const {
@@ -577,6 +603,7 @@ export const updateUserData = async (req, res) => {
       experience,
       skills,
       about,
+      phone,
       institute,
       education,
       dob,
@@ -585,20 +612,20 @@ export const updateUserData = async (req, res) => {
       sociallink3,
       sociallink4,
     } = req.body;
+
     const imageFile = req.file;
 
     // Fetch current user data
     const existingUser = await userModel.findById(userId);
     if (!existingUser) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
+      return res.status(404).json({ success: false, message: "User not found." });
     }
 
     let updatedFields = {
       name,
       experience,
       about,
+      phone,
       institute,
       education,
       dob,
@@ -608,32 +635,23 @@ export const updateUserData = async (req, res) => {
       sociallink4,
     };
 
-    // Convert skills to an array if it is a string
     if (skills) {
-      updatedFields.skills = Array.isArray(skills) ? skills : skills.split(",");
+      try {
+        updatedFields.skills = JSON.parse(skills);
+      } catch (err) {
+        return res.status(400).json({ success: false, message: "Invalid skills format." });
+      }
     }
 
-    // Handle image update
     if (imageFile) {
-      if (existingUser.image && existingUser.image !== "") {
-        // Delete old image from Cloudinary
-        const publicId = existingUser.image.split("/").pop().split(".")[0]; // Extract public ID
-        await cloudinary.uploader.destroy(publicId);
-      }
-
-      // Upload new image
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-        resource_type: "image",
-      });
-      updatedFields.image = imageUpload.secure_url;
+      // Upload image to Cloudinary
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+      const imageURL = imageUpload.secure_url;
+      updatedFields.image = imageURL;
     }
 
     // Update user in DB
-    const updatedUser = await userModel.findByIdAndUpdate(
-      userId,
-      updatedFields,
-      { new: true }
-    );
+    const updatedUser = await userModel.findByIdAndUpdate(userId, updatedFields, { new: true });
 
     res.json({ success: true, message: "Profile Updated", user: updatedUser });
   } catch (error) {
@@ -641,6 +659,7 @@ export const updateUserData = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 //upload resume             ....need to verify
 export const uploadResume = async (req, res) => {

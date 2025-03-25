@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   sociallink1:{type:String}, //linkedin
   sociallink2:{type:String}, //github
   sociallink3:{type:String}, //instagram
-  sociallink4:{type:String}, //twitter X
+  sociallink4:{type:String}, // X
 
   appliedjobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "jobs" }],  
 });
