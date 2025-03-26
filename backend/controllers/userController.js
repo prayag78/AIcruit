@@ -183,20 +183,13 @@ export const recommendedJobs = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Debug: Log the user details
-    console.log("User Details:", userDetails);
-
-    // Fetch jobs where applicationtype is "job"
     const jobs = await jobsModel.find(
       { applicationtype: "job" },
-      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 }
+      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 , postdate: 1, location: 1 , deadline: 1}
     );
 
-    // Debug: Log the jobs fetched from the database
-    console.log("Jobs fetched from DB:", jobs);
-
     if (jobs.length === 0) {
-      return res.status(404).json({ message: "No job openings found" });
+      return res.status(404).json({ message: "No job openings found"});
     }
 
     const formattedUserDetails = JSON.stringify({
@@ -206,9 +199,6 @@ export const recommendedJobs = async (req, res) => {
     });
 
     const formattedJobs = JSON.stringify(jobs);
-
-    // Debug: Log the formatted jobs
-    console.log("Formatted Jobs:", formattedJobs);
 
     const prompt = `
       You are a job matching expert. Analyze the following user profile and job listings to find the top 3 most relevant matches.
@@ -237,17 +227,10 @@ export const recommendedJobs = async (req, res) => {
     const result = await model.generateContent(prompt);
     const response = result.response;
 
-    // Debug: Log the raw AI response
-    console.log("Raw AI Response:", response.text());
-
-    // Clean and parse the AI response
     let responseText = response
       .text()
       .trim()
       .replace(/```json\n?|```\n?/g, "");
-
-    // Debug: Log the cleaned AI response
-    console.log("Cleaned AI Response:", responseText);
 
     let recommendedJobs;
     try {
@@ -259,6 +242,7 @@ export const recommendedJobs = async (req, res) => {
 
       recommendedJobs = recommendedJobs.map((job) => {
         const matchedJob = jobs.find((j) => j._id.toString() === job.jobId);
+        console.log("Matched Job:", matchedJob);
 
         let matchReason = "";
         if (job.matchScore >= 80) {
@@ -275,6 +259,9 @@ export const recommendedJobs = async (req, res) => {
           applicationtype: matchedJob?.applicationtype || "Unknown",
           jobrole: matchedJob?.jobrole || "Unknown",
           matchScore: job.matchScore,
+          postdate: matchedJob?.postdate || "Unknown",
+          location: matchedJob?.location || "Unknown",
+          deadline: matchedJob?.deadline || "Unknown",
           matchReason,
         };
       });
@@ -320,7 +307,7 @@ export const recommendedInternships = async (req, res) => {
     // Fetch jobs where applicationtype is "job"
     const jobs = await jobsModel.find(
       { applicationtype: "internship" },
-      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 }
+      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 , postdate: 1, location: 1 , deadline: 1}
     );
 
     // Debug: Log the jobs fetched from the database
@@ -405,6 +392,9 @@ export const recommendedInternships = async (req, res) => {
           company: matchedJob?.company || "Unknown",
           applicationtype: matchedJob?.applicationtype || "Unknown",
           jobrole: matchedJob?.jobrole || "Unknown",
+          postdate: matchedJob?.postdate || "Unknown",
+          location: matchedJob?.location || "Unknown",
+          deadline: matchedJob?.deadline || "Unknown",
           matchScore: job.matchScore,
           matchReason,
         };
@@ -513,84 +503,7 @@ export const getUserApplications = async (req, res) => {
   }
 };
 
-//Update user data           ....need to verify
-
-// export const updateUserData = async (req, res) => {
-//   try {
-//     const userId = req.userId;
-//     if (!userId) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "User ID is required." });
-//     }
-
-//     const {
-//       name,
-//       experience,
-//       skills,
-//       about,
-//       phone,
-//       institute,
-//       education,
-//       dob,
-//       sociallink1,
-//       sociallink2,
-//       sociallink3,
-//       sociallink4,
-//     } = req.body;
-
-//     const imageFile = req.file;
-
-//     // Fetch current user data
-//     const existingUser = await userModel.findById(userId);
-//     if (!existingUser) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not found." });
-//     }
-
-//     let updatedFields = {
-//       name,
-//       experience,
-//       about,
-//       phone,
-//       institute,
-//       education,
-//       dob,
-//       sociallink1,
-//       sociallink2,
-//       sociallink3,
-//       sociallink4,
-//     };
-
-//     // Convert skills to an array if it is a string
-//     if (skills) {
-//       updatedFields.skills = Array.isArray(skills) ? skills : skills.split(",");
-//     }
-
-//     if (imageFile) {
-
-//       // upload image to cloudinary
-//       const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" })
-//       const imageURL = imageUpload.secure_url
-
-//       await userModel.findByIdAndUpdate(userId, { image: imageURL })
-//   }
-
-//     // Update user in DB
-//     const updatedUser = await userModel.findByIdAndUpdate(
-//       userId,
-//       updatedFields,
-//       { new: true }
-//     );
-
-//     res.json({ success: true, message: "Profile Updated", user: updatedUser });
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
+//Update user data         
 export const updateUserData = async (req, res) => {
   try {
     const userId = req.userId;
@@ -659,7 +572,6 @@ export const updateUserData = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 //upload resume             ....need to verify
 export const uploadResume = async (req, res) => {

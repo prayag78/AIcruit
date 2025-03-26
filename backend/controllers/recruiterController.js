@@ -289,6 +289,36 @@ export const getJobs = async (req, res) => {
   }
 };
 
+//get only active jobs
+export const getActiveJobs = async (req, res) => {
+  try {
+    const jobs = await jobsModel
+      .find({ active: true, applicationtype: "job" })
+      .populate({ path: "recruiter", select: "-password" });
+
+    res.json({ success: true, jobs });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+//get only active internships
+export const getActiveInternships = async (req, res) => {
+  try {
+    const jobs = await jobsModel
+      .find({ active: true, applicationtype: "internship" })
+      .populate({ path: "recruiter", select: "-password" });
+    res.json({ success: true, jobs });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+    
+  }
+}
+
+
+
 //get company posted jobs
 export const getCompanyJobs = async (req, res) => {
   try {

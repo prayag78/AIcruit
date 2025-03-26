@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { FaMapMarkerAlt, FaUsers, FaClock, FaBookmark } from "react-icons/fa";
 
 const Portal = () => {
-  const { backendUrl } = useContext(AppContext);
+  const { backendUrl, utoken, userData } = useContext(AppContext);
   const { id } = useParams(); // Get job ID from URL
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -20,7 +20,13 @@ const Portal = () => {
   const [location, setLocation] = useState(searchParams.get("location") || "");
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
-  const [selectedJob, setSelectedJob] = useState(null); // Store selected job
+  const [selectedJob, setSelectedJob] = useState(null);
+
+  const isApplied = userData?.appliedjobs?.includes(selectedJob?._id);
+   console.log("User Data : ",userData);
+  console.log(selectedJob);
+  console.log(selectedJob);
+  console.log(isApplied);
 
   useEffect(() => {
     fetchJobs();
@@ -64,6 +70,32 @@ const Portal = () => {
       }
     } catch (error) {
       console.error("Error fetching job", error);
+    }
+  };
+
+  const applyJob = async (jobId) => {
+    if (!utoken) {
+      toast.error("Please login to apply for jobs");
+      navigate("/login");
+      return;
+    }
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/apply`,
+        { jobId },
+        {
+          headers: {
+            token: utoken,
+          },
+        }
+      );
+      if (data.success) {
+        toast.success("Applied successfully");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error("Error applying job", error);
     }
   };
 
@@ -179,7 +211,8 @@ const Portal = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <h2 className="text-2xl font-bold">{selectedJob.jobrole}</h2>
-                  <p className="text-gray-600">{selectedJob.company}</p>
+                  <p className="text-gray-600">{selectedJob.company} || <span>{selectedJob.applicationtype}</span></p> 
+                  
                   <div className="text-sm text-gray-500 flex items-center gap-2">
                     <FaMapMarkerAlt className="text-gray-500" />
                     <span>{selectedJob.location}</span>
@@ -198,10 +231,18 @@ const Portal = () => {
                 <FaBookmark className="text-gray-500 cursor-pointer" />
               </div>
 
-              <button className="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg w-full font-semibold">
-                Apply Now
+              <button
+                onClick={() => !isApplied && applyJob(selectedJob._id)}
+                className={`mt-4 px-6 py-2 rounded-lg w-full font-semibold ${
+                  isApplied
+                    ? "bg-gray-400 text-white cursor-not-allowed"
+                    : "bg-green-500 text-white hover:bg-green-600"
+                }`}
+                disabled={isApplied}
+              >
+                {isApplied ? "Applied" : "Apply Now"}
               </button>
-
+              
               <h3 className="mt-6 text-lg font-semibold">Job Description</h3>
               <p className="text-sm text-gray-700">{selectedJob.description}</p>
 

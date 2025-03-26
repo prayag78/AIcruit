@@ -32,15 +32,15 @@ const App = () => {
       <ToastContainer />
       <Routes>
         {/* Public Routes - Available to Everyone */}
-        {!token && !utoken && (
-          <>
+        {/* {!token && !utoken && (
+          <> */}
             <Route path="/login" element={<Login />} />
             <Route path="/recruiter-login" element={<R_login />} />
             <Route path="/user-login" element={<U_login />} />
             {/* Redirect to login if no token */}
             <Route path="*" element={<Navigate to="/login" />} />
-          </>
-        )}
+          {/* </>
+        )} */}
 
         {/* User Routes - Available only if utoken exists */}
         {utoken && (

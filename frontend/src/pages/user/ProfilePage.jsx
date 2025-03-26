@@ -1,12 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FaLinkedin,
-  FaGithub,
-  FaXTwitter,
-  FaInstagram,
-  FaSquarePhone,
-} from "react-icons/fa6";
+import {FaLinkedin,FaGithub,FaXTwitter,FaInstagram,FaSquarePhone} from "react-icons/fa6";
 import { MdEmail, MdEdit } from "react-icons/md";
 import { FaUniversity } from "react-icons/fa";
 import { AppContext } from "../../context/AppContext";
@@ -49,9 +43,8 @@ const ProfilePage = () => {
       formData.append("experience", userData.experience || "");
       formData.append("institute", userData.institute || "");
       formData.append("education", userData.education || "");
-      formData.append("skills", JSON.stringify(skills)); // Send skills as a JSON string
+      formData.append("skills", JSON.stringify(skills)); 
 
-      // Append image if it exists
       if (image) {
         formData.append('image', image);
       }
@@ -304,6 +297,12 @@ const ProfilePage = () => {
           Save Information
         </button>
       )}
+      <button
+          onClick={logout}
+          className="bg-green-400 text-white px-4 py-2 rounded w-full mt-4"
+        >
+          Logout
+        </button>
     </div>
   );
 };

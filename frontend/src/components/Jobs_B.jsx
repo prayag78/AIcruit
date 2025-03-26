@@ -1,6 +1,9 @@
 import React from "react";
 import { Lock } from "lucide-react";
 import { assets } from "../assets/assets";
+import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
 
 const Jobs_B = () => {
   const jobCategories = [
@@ -25,6 +28,8 @@ const Jobs_B = () => {
       icons: 4,
     },
   ];
+
+  const navigate = useNavigate();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -51,7 +56,7 @@ const Jobs_B = () => {
           {/* Left side - Text and CTA */}
           <div className="md:w-1/2 space-y-6">
             <h1 className="text-2xl md:text-3xl font-semibold text-gray-800">Post Jobs & Internship</h1>
-            <button className="bg-[#1a4677] hover:bg-[#0f3561] text-white rounded-full px-8 py-2">Post Now</button>
+            <button onClick={()=> navigate('/recruiter-login')} className="bg-[#1a4677] hover:bg-[#0f3561] text-white rounded-full px-8 py-2">Post Now</button>
           </div>
           {/* Right side - Illustration */}
           <div className="md:w-1/2 relative">
@@ -61,7 +66,6 @@ const Jobs_B = () => {
               width={500}
               height={300}
               className="w-full h-auto"
-              priority
             />
           </div>
         </div>
