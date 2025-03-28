@@ -504,6 +504,103 @@ export const getUserApplications = async (req, res) => {
 };
 
 //Update user data         
+// export const updateUserData = async (req, res) => {
+//   try {
+//     const userId = req.userId;
+//     if (!userId) {
+//       return res.status(400).json({ success: false, message: "User ID is required." });
+//     }
+
+//     const {
+//       name,
+//       experience,
+//       skills,
+//       about,
+//       phone,
+//       institute,
+//       education,
+//       dob,
+//       sociallink1,
+//       sociallink2,
+//       sociallink3,
+//       sociallink4,
+//     } = req.body;
+
+//     const imageFile = req.file;
+
+//     // Fetch current user data
+//     const existingUser = await userModel.findById(userId);
+//     if (!existingUser) {
+//       return res.status(404).json({ success: false, message: "User not found." });
+//     }
+
+//     let updatedFields = {
+//       name,
+//       experience,
+//       about,
+//       phone,
+//       institute,
+//       education,
+//       dob,
+//       sociallink1,
+//       sociallink2,
+//       sociallink3,
+//       sociallink4,
+//     };
+
+//     if (skills) {
+//       try {
+//         updatedFields.skills = JSON.parse(skills);
+//       } catch (err) {
+//         return res.status(400).json({ success: false, message: "Invalid skills format." });
+//       }
+//     }
+
+//     if (imageFile) {
+//       // Upload image to Cloudinary
+//       const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+//       const imageURL = imageUpload.secure_url;
+//       updatedFields.image = imageURL;
+//     }
+
+//     // Update user in DB
+//     const updatedUser = await userModel.findByIdAndUpdate(userId, updatedFields, { new: true });
+
+//     res.json({ success: true, message: "Profile Updated", user: updatedUser });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
+//upload resume             ....need to verify
+export const uploadResume = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const resumeFile = req.file;
+
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID is required." });
+    }
+
+    const userData = await userModel.findById(userId);
+
+    if (resumeFile) {
+      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path);
+      userData.resume = resumeUpload.secure_url;
+    }
+
+    await userData.save();
+
+    res.json({ success: true, message: "Resume uploaded successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
 export const updateUserData = async (req, res) => {
   try {
     const userId = req.userId;
@@ -526,7 +623,9 @@ export const updateUserData = async (req, res) => {
       sociallink4,
     } = req.body;
 
-    const imageFile = req.file;
+    // Make sure to get the first file from the arrays
+    const imageFile = req.files?.image ? req.files.image[0] : null;
+    const resumeFile = req.files?.resume ? req.files.resume[0] : null;
 
     // Fetch current user data
     const existingUser = await userModel.findById(userId);
@@ -558,9 +657,14 @@ export const updateUserData = async (req, res) => {
 
     if (imageFile) {
       // Upload image to Cloudinary
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
-      const imageURL = imageUpload.secure_url;
-      updatedFields.image = imageURL;
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image", type: "upload" });
+      updatedFields.image = imageUpload.secure_url;
+    }
+
+    if (resumeFile) {
+      // Upload resume to Cloudinary (as a raw file)
+      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path, { resource_type: "raw", type: "upload" });
+      updatedFields.resume = resumeUpload.secure_url;
     }
 
     // Update user in DB
@@ -573,30 +677,3 @@ export const updateUserData = async (req, res) => {
   }
 };
 
-//upload resume             ....need to verify
-export const uploadResume = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const resumeFile = req.file;
-
-    if (!userId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User ID is required." });
-    }
-
-    const userData = await userModel.findById(userId);
-
-    if (resumeFile) {
-      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path);
-      userData.resume = resumeUpload.secure_url;
-    }
-
-    await userData.save();
-
-    res.json({ success: true, message: "Resume uploaded successfully" });
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
-  }
-};

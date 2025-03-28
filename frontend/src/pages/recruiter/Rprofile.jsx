@@ -9,7 +9,7 @@ const Rprofile = () => {
   const logout = () => {
     setToken("");
     localStorage.removeItem("token");
-    navigate("/recruiter-login");
+    navigate("/login");
   };
 
   return (

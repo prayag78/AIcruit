@@ -26,6 +26,7 @@ import Programmer_bro from './Programmer_bro.svg'
 import post_in from './post_in.svg'
 import jobseeker from './jobseeker.png'
 import recruiter from './recruiter.png'
+import resume_upload from './resume_upload_icon.svg'
 
 export const assets = {
   bookmark_icon,
@@ -56,6 +57,7 @@ export const assets = {
   post_in,
   jobseeker,
   recruiter,
+  resume_upload,
   
 };
 

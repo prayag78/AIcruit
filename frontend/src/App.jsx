@@ -1,3 +1,4 @@
+// App.jsx
 import React, { useContext } from "react";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
@@ -16,7 +17,11 @@ import U_login from "./pages/user/U_login";
 import { ToastContainer } from "react-toastify";
 import DashboardPage from "./pages/recruiter/DashboardPage";
 import Rprofile from "./pages/recruiter/Rprofile";
+import RecruiterLayout from "./components/RecruiterLayout";
 import { AppContext } from "./context/AppContext";
+import AddJobs from "./components/AddJobs";
+import Applications from "./components/Applications";
+import ManageJobs from "./components/ManageJobs";
 
 const App = () => {
   const { token, utoken } = useContext(AppContext);
@@ -31,18 +36,12 @@ const App = () => {
       {!isLoginPage && <Navbar />}
       <ToastContainer />
       <Routes>
-        {/* Public Routes - Available to Everyone */}
-        {/* {!token && !utoken && (
-          <> */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/recruiter-login" element={<R_login />} />
-            <Route path="/user-login" element={<U_login />} />
-            {/* Redirect to login if no token */}
-            <Route path="*" element={<Navigate to="/login" />} />
-          {/* </>
-        )} */}
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/recruiter-login" element={<R_login />} />
+        <Route path="/user-login" element={<U_login />} />
 
-        {/* User Routes - Available only if utoken exists */}
+        {/* User Routes */}
         {utoken && (
           <>
             <Route path="/" element={<Home />} />
@@ -54,19 +53,20 @@ const App = () => {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/portal" element={<Portal />} />
             <Route path="/portal/:id" element={<Portal />} />
-            {/* Redirect users from recruiter routes */}
             <Route path="*" element={<Navigate to="/" />} />
           </>
         )}
 
-        {/* Recruiter Routes - Available only if token exists */}
+        {/* Recruiter Routes */}
         {token && (
-          <>
-            <Route path="/dashboard" element={<DashboardPage />} />
+          <Route element={<RecruiterLayout />}>
+            {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
             <Route path="/recruiter-profile" element={<Rprofile />} />
-            {/* Redirect recruiters from user routes */}
-            <Route path="*" element={<Navigate to="/dashboard" />} />
-          </>
+            <Route path="/post" element={<AddJobs />} />
+            <Route path="/manage" element={<ManageJobs />} />
+            <Route path="/applicantions" element={<Applications />} />
+            <Route path="*" element={<ManageJobs/>} />
+          </Route>
         )}
       </Routes>
       {!isLoginPage && <Footer />}
