@@ -1,4 +1,3 @@
-// App.jsx
 import React, { useContext } from "react";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
@@ -27,7 +26,6 @@ const App = () => {
   const { token, utoken } = useContext(AppContext);
   const location = useLocation();
 
-  // List of login-related routes where navbar and footer should NOT be shown
   const loginPages = ["/login", "/recruiter-login", "/user-login"];
   const isLoginPage = loginPages.includes(location.pathname);
 
@@ -36,13 +34,18 @@ const App = () => {
       {!isLoginPage && <Navbar />}
       <ToastContainer />
       <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/recruiter-login" element={<R_login />} />
-        <Route path="/user-login" element={<U_login />} />
+        {/* Public Routes - Only accessible to new users */}
+        {!utoken && !token ? (
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="/recruiter-login" element={<R_login />} />
+            <Route path="/user-login" element={<U_login />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </>
+        ) : null}
 
-        {/* User Routes */}
-        {utoken && (
+        {/* User Routes - Only accessible if user is logged in */}
+        {utoken ? (
           <>
             <Route path="/" element={<Home />} />
             <Route path="/jobs" element={<JobsPage />} />
@@ -55,19 +58,19 @@ const App = () => {
             <Route path="/portal/:id" element={<Portal />} />
             <Route path="*" element={<Navigate to="/" />} />
           </>
-        )}
+        ) : null}
 
-        {/* Recruiter Routes */}
-        {token && (
+        {/* Recruiter Routes - Only accessible if recruiter is logged in */}
+        {token ? (
           <Route element={<RecruiterLayout />}>
-            {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/recruiter-profile" element={<Rprofile />} />
             <Route path="/post" element={<AddJobs />} />
             <Route path="/manage" element={<ManageJobs />} />
-            <Route path="/applicantions" element={<Applications />} />
-            <Route path="*" element={<ManageJobs/>} />
+            <Route path="/applications" element={<Applications />} />
+            <Route path="*" element={<Navigate to="/dashboard" />} />
           </Route>
-        )}
+        ) : null}
       </Routes>
       {!isLoginPage && <Footer />}
     </div>

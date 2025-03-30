@@ -23,6 +23,6 @@ userRouter.get('/applications',authUser,getUserApplications);
 userRouter.post('/update-profile', upload.fields([{ name: 'image' }, { name: 'resume' }]), authUser, updateUserData);
 
 
-userRouter.post('/upload-resume', upload.single('resume'),authUser,updateUserData);
+// userRouter.post('/upload-resume', upload.single('resume'),authUser,updateUserData);
 
 export default userRouter;

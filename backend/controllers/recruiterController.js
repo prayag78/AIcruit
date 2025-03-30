@@ -174,10 +174,77 @@ export const loginRecruiter = async (req, res) => {
 };
 
 //post a job
+// export const postJob = async (req, res) => {
+//   try {
+//     const {
+//       company,
+//       applicationtype,
+//       jobrole,
+//       location,
+//       postdate,
+//       deadline,
+//       jobtype,
+//       jobtiming,
+//       category,
+//       duration,
+//       salary,
+//       active,
+//       experience,
+//       workdays,
+//       description,
+//       responsibilities,
+//       requirements,
+//       recruiterId,
+//     } = req.body;
+
+//     if (!recruiterId) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Recruiter ID is required" });
+//     }
+
+//     const newJob = new jobsModel({
+//       company,
+//       applicationtype,
+//       jobrole,
+//       location,
+//       postdate,
+//       deadline,
+//       jobtype,
+//       jobtiming,
+//       category,
+//       duration,
+//       salary,
+//       active,
+//       experience,
+//       workdays,
+//       description,
+//       responsibilities,
+//       requirements,
+//       recruiter: recruiterId,
+//     });
+
+//     const job = await newJob.save();
+
+//     await mongoose
+//       .model("recruiter")
+//       .findByIdAndUpdate(
+//         recruiterId,
+//         { $push: { postedjobs: job._id } },
+//         { new: true }
+//       );
+
+//     res.json({ success: true, job });
+//   } catch (error) {
+//     console.error("Error posting job:", error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
 export const postJob = async (req, res) => {
   try {
+    // Destructure all fields from req.body EXCEPT company (which we will override)
     const {
-      company,
       applicationtype,
       jobrole,
       location,
@@ -203,8 +270,15 @@ export const postJob = async (req, res) => {
         .json({ success: false, message: "Recruiter ID is required" });
     }
 
+    // Lookup recruiter by ID to get the company name
+    const recruiter = await recruiterModel.findById(recruiterId);
+    if (!recruiter) {
+      return res.status(404).json({ success: false, message: "Recruiter not found" });
+    }
+
+    // Create new job using company from recruiter data
     const newJob = new jobsModel({
-      company,
+      company: recruiter.company, // company comes from recruiter data
       applicationtype,
       jobrole,
       location,
@@ -226,13 +300,12 @@ export const postJob = async (req, res) => {
 
     const job = await newJob.save();
 
-    await mongoose
-      .model("recruiter")
-      .findByIdAndUpdate(
-        recruiterId,
-        { $push: { postedjobs: job._id } },
-        { new: true }
-      );
+    // Add this job ID to the recruiter’s posted jobs
+    await recruiterModel.findByIdAndUpdate(
+      recruiterId,
+      { $push: { postedjobs: job._id } },
+      { new: true }
+    );
 
     res.json({ success: true, job });
   } catch (error) {
@@ -244,17 +317,22 @@ export const postJob = async (req, res) => {
 //get company data
 export const getCompanyData = async (req, res) => {
   try {
-    const { recruiterId } = req.body;
-    const recruiter = await recruiterModel
-      .findById(recruiterId)
-      .select("-password");
-    if (!recruiter) {
-      return res.json({ success: false, message: "Recruiter not found" });
+    const recruiterId = req.body.recruiterId;
+    
+    if (!recruiterId) {
+      return res.json({ success: false, message: "Unauthorized access" });
     }
-    res.json({ success: true, recruiter });
+
+    const recruiter = await recruiterModel.findById(recruiterId).select("-password");
+    
+    if (!recruiter) {
+      return res.json({ success: false, message: "Company not found" });
+    }
+
+    res.json({ success: true, data: recruiter });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 };
 
@@ -317,15 +395,18 @@ export const getActiveInternships = async (req, res) => {
   }
 }
 
-
-
 //get company posted jobs
 export const getCompanyJobs = async (req, res) => {
   try {
-    const { recruiterId } = req.body;
+    const recruiterId = req.body.recruiterId; // Access recruiterId from req
+    if (!recruiterId) {
+      return res.json({ success: false, message: "Recruiter ID missing" });
+    }
+
     const jobs = await jobsModel
       .find({ recruiter: recruiterId })
       .populate({ path: "recruiter", select: "-password" });
+
     res.json({ success: true, jobs });
   } catch (error) {
     console.log(error);
@@ -507,7 +588,6 @@ export const getJobApplicants = async (req, res) => {
 };
 
 //accept or reject an application
-
 export const acceptRejectApplication = async (req, res) => {
   try {
     const recruiterId = req.body.recruiterId;

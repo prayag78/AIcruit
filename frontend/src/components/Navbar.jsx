@@ -48,8 +48,8 @@ const Navbar = () => {
               <hr className="border-none outline-none h-0.5 bg-blue1 w-10/12 m-auto hidden " />
             </NavLink>
             <NavLink to="/profile">
-              <li className="py-1 mr-6">
-              {userData?<img src={userData.image} width="24px" height="24px" />:<img src={assets.profile_icon} width="24px" height="24px" />}
+              <li className="py-1 mr-6 ">
+              {userData?<img src={userData.image} width="26px" height="24px" className="rounded-full" />:<img src={assets.profile_icon} width="26px" height="24px" className="rounded-full"  />}
               </li>
             </NavLink>
           </>

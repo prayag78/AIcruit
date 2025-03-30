@@ -574,32 +574,32 @@ export const getUserApplications = async (req, res) => {
 // };
 
 //upload resume             ....need to verify
-export const uploadResume = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const resumeFile = req.file;
+// export const uploadResume = async (req, res) => {
+//   try {
+//     const userId = req.userId;
+//     const resumeFile = req.file;
 
-    if (!userId) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User ID is required." });
-    }
+//     if (!userId) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "User ID is required." });
+//     }
 
-    const userData = await userModel.findById(userId);
+//     const userData = await userModel.findById(userId);
 
-    if (resumeFile) {
-      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path);
-      userData.resume = resumeUpload.secure_url;
-    }
+//     if (resumeFile) {
+//       const resumeUpload = await cloudinary.uploader.upload(resumeFile.path);
+//       userData.resume = resumeUpload.secure_url;
+//     }
 
-    await userData.save();
+//     await userData.save();
 
-    res.json({ success: true, message: "Resume uploaded successfully" });
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
-  }
-};
+//     res.json({ success: true, message: "Resume uploaded successfully" });
+//   } catch (error) {
+//     console.log(error);
+//     res.json({ success: false, message: error.message });
+//   }
+// };
 
 export const updateUserData = async (req, res) => {
   try {
@@ -663,7 +663,7 @@ export const updateUserData = async (req, res) => {
 
     if (resumeFile) {
       // Upload resume to Cloudinary (as a raw file)
-      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path, { resource_type: "raw", type: "upload" });
+      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path, { resource_type: "auto" , type: "upload"  });
       updatedFields.resume = resumeUpload.secure_url;
     }
 
@@ -673,7 +673,7 @@ export const updateUserData = async (req, res) => {
     res.json({ success: true, message: "Profile Updated", user: updatedUser });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message});
   }
 };
 

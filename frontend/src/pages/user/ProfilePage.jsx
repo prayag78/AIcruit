@@ -6,6 +6,7 @@ import {
   FaXTwitter,
   FaInstagram,
   FaSquarePhone,
+  FaFilePdf,
 } from "react-icons/fa6";
 import { MdEmail, MdEdit } from "react-icons/md";
 import { FaUniversity } from "react-icons/fa";
@@ -24,7 +25,6 @@ const ProfilePage = () => {
   const [resumePreview, setResumePreview] = useState(null); // For resume preview (file name)
   const [newSkill, setNewSkill] = useState("");
   const [skills, setSkills] = useState([]);
-
   const [applications, setApplications] = useState([]);
 
   const applicationStatus = async () => {
@@ -37,7 +37,7 @@ const ProfilePage = () => {
       setApplications(data.applications);
     } catch (error) {
       console.error("Update Profile Error:", error);
-      toast.error(error.message || "Failed to update  profile");
+      toast.error(error.message || "Failed to update profile");
     }
   };
 
@@ -124,8 +124,21 @@ const ProfilePage = () => {
     setSkills(skills.filter((skill) => skill !== skillToRemove));
   };
 
+  const handleResumeChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check if file is PDF
+      if (file.type === "application/pdf") {
+        setResume(file);
+        setResumePreview(file.name);
+      } else {
+        toast.error("Please upload a PDF file only");
+      }
+    }
+  };
+
   if (!userData) {
-    return <p>Loading...</p>; // Show a loading message while userData is being fetched
+    return <p>Loading...</p>;
   }
 
   return (
@@ -260,11 +273,22 @@ const ProfilePage = () => {
           )}
         </div>
 
+        {/* Resume Section */}
         <div className="mb-4">
           <h2 className="font-bold">Your Resume</h2>
           <div className="flex items-center gap-4">
             {userData.resume ? (
-              <p className="text-green-500 font-semibold">Uploaded</p> // Display "Uploaded" text
+              <div className="flex items-center gap-2">
+                <FaFilePdf className="text-red-500 text-xl" />
+                <a
+                  href={userData.resume}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  View Resume
+                </a>
+              </div>
             ) : (
               <p className="text-gray-500">No resume uploaded</p>
             )}
@@ -277,12 +301,8 @@ const ProfilePage = () => {
                 <input
                   type="file"
                   id="resume"
-                  accept=".pdf,.doc,.docx"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    setResume(file);
-                    setResumePreview(file.name);
-                  }}
+                  accept="application/pdf"
+                  onChange={handleResumeChange}
                   hidden
                 />
               </label>
@@ -400,7 +420,6 @@ const ProfilePage = () => {
         <h2 className="text-xl font-bold text-gray-800">Applied Jobs</h2>
 
         {/* Desktop Table (shown on medium screens and up) */}
-
         <div className="hidden md:block overflow-auto rounded-lg border border-gray-200 shadow-sm">
           <table className="w-full min-w-[800px]">
             <thead className="bg-gray-50">
@@ -473,7 +492,7 @@ const ProfilePage = () => {
           </table>
         </div>
 
-        {/* Mobile Cards (shown on small screens) - unchanged */}
+        {/* Mobile Cards (shown on small screens) */}
         <div className="md:hidden space-y-4">
           {applications.map((app) => (
             <div
