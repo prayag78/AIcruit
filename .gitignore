@@ -10,7 +10,7 @@ build/
 
 # Ignore environment variables
 .env
-.txt
+*.txt
 
 # Ignore OS generated files
 .DS_Store

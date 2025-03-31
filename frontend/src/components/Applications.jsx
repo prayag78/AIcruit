@@ -158,7 +158,7 @@ const Applications = () => {
                     </div>
                   )}
 
-                  {/* <div className="flex items-center text-gray-600">
+                  <div className="flex items-center text-gray-600">
                     <FileText className="w-4 h-4 mr-2 text-gray-500" />
                     {application.userId?.resume ? (
                       <a 
@@ -168,28 +168,7 @@ const Applications = () => {
                         className="flex items-center hover:text-blue-600"
                       >
                         <Download className="w-4 h-4 mr-1" />
-                        Download Resume
-                      </a>
-                    ) : (
-                      <span className="text-gray-400">No resume available</span>
-                    )}
-                  </div> */}
-
-                  <div className="flex items-center text-gray-600">
-                    <FileText className="w-4 h-4 mr-2 text-gray-500" />
-                    {application.userId?.resume ? (
-                      <a
-                        href={
-                          application.userId.resume.includes("?")
-                            ? `${application.userId.resume}&fl_attachment=resume.pdf`
-                            : `${application.userId.resume}?fl_attachment=resume.pdf`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center hover:text-blue-600"
-                      >
-                        <Download className="w-4 h-4 mr-1" />
-                        Download Resume
+                        View Resume
                       </a>
                     ) : (
                       <span className="text-gray-400">No resume available</span>
