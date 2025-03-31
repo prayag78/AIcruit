@@ -1,13 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FaLinkedin,
-  FaGithub,
-  FaXTwitter,
-  FaInstagram,
-  FaSquarePhone,
-  FaFilePdf,
-} from "react-icons/fa6";
+import {FaSquarePhone,FaFilePdf} from "react-icons/fa6";
 import { MdEmail, MdEdit } from "react-icons/md";
 import { FaUniversity } from "react-icons/fa";
 import { AppContext } from "../../context/AppContext";
@@ -20,9 +13,9 @@ const ProfilePage = () => {
   const { utoken, setUtoken, userData, setUserData, userProfile, backendUrl } =
     useContext(AppContext);
   const [isEdit, setIsEdit] = useState(false);
-  const [image, setImage] = useState(null); // For profile image
-  const [resume, setResume] = useState(null); // For resume upload
-  const [resumePreview, setResumePreview] = useState(null); // For resume preview (file name)
+  const [image, setImage] = useState(null); 
+  const [resume, setResume] = useState(null); 
+  const [resumePreview, setResumePreview] = useState(null);
   const [newSkill, setNewSkill] = useState("");
   const [skills, setSkills] = useState([]);
   const [applications, setApplications] = useState([]);
@@ -387,16 +380,6 @@ const ProfilePage = () => {
                 "Narrate your professional journey and fast-track your way to new career heights!"}
             </p>
           )}
-        </div>
-
-        <div className="mb-4">
-          <h2 className="font-bold">Social Links</h2>
-          <div className="flex gap-4 text-2xl">
-            <FaLinkedin className="cursor-pointer" />
-            <FaGithub className="cursor-pointer" />
-            <FaXTwitter className="cursor-pointer" />
-            <FaInstagram className="cursor-pointer" />
-          </div>
         </div>
 
         {isEdit && (
