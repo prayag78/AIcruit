@@ -93,7 +93,7 @@ const R_login = () => {
         {/* Right Side (Login Form) */}
         <div className="flex flex-col justify-center items-center p-8 flex-1">
           <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">
-            STEP INTO THE FUTURE OF HIRING WITH ARYTIC.
+            STEP INTO THE FUTURE OF HIRING WITH AIcruit.
           </h2>
 
           <form onSubmit={onSubmitHandler} className="w-full">

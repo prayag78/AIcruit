@@ -33,7 +33,7 @@ const Faq = () => {
     <div className="flex flex-col lg:flex-row h-auto lg:h-[85vh] bg-[#2b3343] text-white pt-3">
       {/* Left Section - FAQ */}
       <div className="w-full lg:w-1/2 mx-auto m-4 p-4">
-        <h1 className="text-3xl lg:text-5xl mb-6 text-left">Why HireMe</h1>
+        <h1 className="text-3xl lg:text-5xl mb-6 text-left">Why AIcruit</h1>
         <p className="text-lg lg:text-[22px] m-2 mb-4">
           Great talent teams deserve a great platform. That’s why we built a
           single AI platform that does it all:

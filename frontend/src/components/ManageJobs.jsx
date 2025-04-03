@@ -2,14 +2,16 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
-import { Calendar, MapPin, Briefcase, User, Clock, DollarSign, Award, ClipboardList, CheckCircle, XCircle, Edit, Trash2 } from 'lucide-react';
+import { Calendar, MapPin, Briefcase, User, Clock, Award, ClipboardList, CheckCircle, XCircle, Trash2, IndianRupee } from 'lucide-react';
 import { format } from 'date-fns';
+import { useNavigate } from "react-router-dom";
 
 const ManageJobs = () => {
-  const { token, backendUrl } = useContext(AppContext);
+  const { token, backendUrl, recruiterdata } = useContext(AppContext);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedJob, setSelectedJob] = useState(null);
+
+  const navigate = useNavigate();
 
   const fetchCompanyJobs = async () => {
     try {
@@ -26,26 +28,25 @@ const ManageJobs = () => {
     }
   };
 
-  const toggleJobStatus = async (jobId, currentStatus) => {
+  const toggleJobStatus = async (jobId) => {
     try {
       await axios.put(
         `${backendUrl}/api/recruiter/change-job-status`,
-        // { active: !currentStatus },
-        { headers: { token: token },
-        jobId: jobId,}
+        { jobId },
+        { headers: { token: token } }
       );
-      toast.success(`Job ${currentStatus ? 'deactivated' : 'activated'} successfully`);
       fetchCompanyJobs();
+      toast.success("Status Update Successfully")
     } catch (error) {
       console.error("Error updating job status:", error);
       toast.error("Failed to update job status");
     }
   };
-
-  const deleteJob = async (jobId) => {
+  
+  const deletePost = async (jobId) => {
     if (window.confirm("Are you sure you want to delete this job posting?")) {
       try {
-        await axios.delete(`${backendUrl}/api/recruiter/jobs/${jobId}`, {
+        await axios.delete(`${backendUrl}/api/recruiter/delete-job/${jobId}`, {
           headers: { token: token }
         });
         toast.success("Job deleted successfully");
@@ -56,12 +57,13 @@ const ManageJobs = () => {
       }
     }
   };
+  
 
   useEffect(() => {
     fetchCompanyJobs();
   }, []);
 
-  console.log("Jobs:", jobs);
+  //console.log("Jobs:", jobs);
 
   if (loading) {
     return (
@@ -72,17 +74,17 @@ const ManageJobs = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 h-[100vh] overflow-auto">
+    <div className="container mx-auto px-4 py-8 h-[100vh] overflow-auto scroll-smooth">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Manage Job Postings</h1>
+          <h1 className="text-3xl font-bold text-gray-800">{recruiterdata?.company} - Manage Job Postings</h1>
           <p className="text-gray-600 mt-2">
             {jobs.length} {jobs.length === 1 ? 'job posting' : 'job postings'} found
           </p>
         </div>
         <button
           className="mt-4 md:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition duration-200"
-          onClick={() => {/* Add navigation to create job page */}}
+          onClick={() => {navigate("/post")}}
         >
           + Post New Job
         </button>
@@ -127,7 +129,7 @@ const ManageJobs = () => {
                     <span>Deadline: {format(new Date(job.deadline), 'MMM dd, yyyy')}</span>
                   </div>
                   <div className="flex items-center text-gray-700">
-                    <DollarSign className="w-4 h-4 mr-2 text-gray-500" />
+                    <IndianRupee className="w-4 h-4 mr-2 text-gray-500" />
                     <span>Salary: {job.salary}</span>
                   </div>
                   <div className="flex items-center text-gray-700">
@@ -158,8 +160,9 @@ const ManageJobs = () => {
                     <span>{job.applicants?.length || 0} applicants</span>
                   </div>
                   <div className="flex space-x-2">
+
                     <button
-                      onClick={() => toggleJobStatus(job._id, job.active)}
+                      onClick={() => toggleJobStatus(job._id)}
                       className={`p-2 rounded-md ${
                         job.active 
                           ? 'bg-red-50 text-red-600 hover:bg-red-100' 
@@ -169,14 +172,9 @@ const ManageJobs = () => {
                     >
                       {job.active ? <XCircle size={18} /> : <CheckCircle size={18} />}
                     </button>
+
                     <button
-                      className="p-2 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100"
-                      title="Edit"
-                    >
-                      <Edit size={18} />
-                    </button>
-                    <button
-                      onClick={() => deleteJob(job._id)}
+                      onClick={() => deletePost(job._id)}
                       className="p-2 rounded-md bg-red-50 text-red-600 hover:bg-red-100"
                       title="Delete"
                     >

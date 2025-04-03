@@ -14,13 +14,13 @@ const Footer = () => {
           <div className="w-32 h-12 bg-gray-300 mb-2"></div>
           {/* Placeholder for Logo */}
           <a
-            href="mailto:support@hireme.com"
+            href="mailto:support@AIcruit.com"
             className="text-blue-600 hover:underline"
           >
-            support@hireme.com
+            support@AIcruit.com
           </a>
           <p className="text-gray-500 text-sm mt-1">
-            © 2025 HireMe. All Rights Reserved.
+            © 2025 AIcruit. All Rights Reserved.
           </p>
         </div>
 

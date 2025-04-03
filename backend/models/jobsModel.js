@@ -1,20 +1,20 @@
 import mongoose from "mongoose";
 
 const jobsSchema = new mongoose.Schema({
-  company: { type: String, required: true },    //Google
+  company: { type: String, required: true },    
   applicationtype: { type: String, required: true, enum: ["job", "internship"] },
-  jobrole: { type: String, required: true },      //Software Developer
-  location: { type: String, required: true },   //Bangalore 
+  jobrole: { type: String, required: true },      
+  location: { type: String, required: true }, 
   postdate: { type: String, required: true },  
   deadline: { type: String, required: true }, 
-  jobtype:{ type: String, required: true },        //Remote 
-  jobtiming: { type: String, required: true }, //Full-time
-  duration: {type : String },  //6 months 
-  category: { type: String, required: true }, //web development
-  salary: { type: String, required: true },  //10k-20k
-  active: { type: Boolean, default: true }, //active
-  experience: { type: String, default:"No experience" },  //No experience required
-  workdays: { type: String, required:true },  //5 days a week
+  jobtype:{ type: String, required: true },       
+  jobtiming: { type: String, required: true }, 
+  duration: {type : String },  
+  category: { type: String, required: true }, 
+  salary: { type: String, required: true },  
+  active: { type: Boolean, default: true }, 
+  experience: { type: String, default:"No experience" },  
+  workdays: { type: String, required:true }, 
   description : { type: String, required: true },
   responsibilities: { type: String, required: true }, 
   requirements: { type: String, required: true }, 

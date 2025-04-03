@@ -174,73 +174,6 @@ export const loginRecruiter = async (req, res) => {
 };
 
 //post a job
-// export const postJob = async (req, res) => {
-//   try {
-//     const {
-//       company,
-//       applicationtype,
-//       jobrole,
-//       location,
-//       postdate,
-//       deadline,
-//       jobtype,
-//       jobtiming,
-//       category,
-//       duration,
-//       salary,
-//       active,
-//       experience,
-//       workdays,
-//       description,
-//       responsibilities,
-//       requirements,
-//       recruiterId,
-//     } = req.body;
-
-//     if (!recruiterId) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Recruiter ID is required" });
-//     }
-
-//     const newJob = new jobsModel({
-//       company,
-//       applicationtype,
-//       jobrole,
-//       location,
-//       postdate,
-//       deadline,
-//       jobtype,
-//       jobtiming,
-//       category,
-//       duration,
-//       salary,
-//       active,
-//       experience,
-//       workdays,
-//       description,
-//       responsibilities,
-//       requirements,
-//       recruiter: recruiterId,
-//     });
-
-//     const job = await newJob.save();
-
-//     await mongoose
-//       .model("recruiter")
-//       .findByIdAndUpdate(
-//         recruiterId,
-//         { $push: { postedjobs: job._id } },
-//         { new: true }
-//       );
-
-//     res.json({ success: true, job });
-//   } catch (error) {
-//     console.error("Error posting job:", error);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
 export const postJob = async (req, res) => {
   try {
     // Destructure all fields from req.body EXCEPT company (which we will override)
@@ -415,15 +348,65 @@ export const getCompanyJobs = async (req, res) => {
 };
 
 //change job status
+// export const changeJobStatus = async (req, res) => {
+//   try {
+//     const { jobId } = req.body;
+//     const recruiterId = req.body.recruiterId;
+
+//     if (!jobId) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Job ID is required.",
+//       });
+//     }
+
+//     const job = await jobsModel.findById(jobId);
+//     if (!job) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Job not found.",
+//       });
+//     }
+
+//     if (job.recruiter.toString() !== recruiterId.toString()) {
+//       return res.status(403).json({
+//         success: false,
+//         message: "You are not authorized to update this job.",
+//       });
+//     }
+
+//     job.active = !job.active;
+//     await job.save();
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Job status updated successfully.",
+//       job: {
+//         id: job._id,
+//         active: job.active,
+//         title: job.title,
+//         company: job.company,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Error updating job status:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "An error occurred while updating the job status.",
+//     });
+//   }
+// };
+
 export const changeJobStatus = async (req, res) => {
   try {
+    // Ideally, recruiterId should come from auth middleware (e.g., req.recruiterId)
     const { jobId } = req.body;
     const recruiterId = req.body.recruiterId;
 
     if (!jobId) {
       return res.status(400).json({
         success: false,
-        message: "Job ID is required.",
+        message: "Job ID is required."
       });
     }
 
@@ -431,19 +414,31 @@ export const changeJobStatus = async (req, res) => {
     if (!job) {
       return res.status(404).json({
         success: false,
-        message: "Job not found.",
+        message: "Job not found."
       });
     }
 
+    // Ensure that the recruiter is authorized to update the job
     if (job.recruiter.toString() !== recruiterId.toString()) {
       return res.status(403).json({
         success: false,
-        message: "You are not authorized to update this job.",
+        message: "You are not authorized to update this job."
       });
     }
 
+    // Toggle the job's active status
     job.active = !job.active;
     await job.save();
+
+    let updatedApplicationsCount = 0;
+    // If the job is being closed (active is now false), update all pending applications to "closed"
+    if (!job.active) {
+      const result = await applicationsModel.updateMany(
+        { jobId: job._id, status: "pending" },
+        { $set: { status: "closed" } }
+      );
+      updatedApplicationsCount = result.modifiedCount;
+    }
 
     return res.status(200).json({
       success: true,
@@ -451,20 +446,21 @@ export const changeJobStatus = async (req, res) => {
       job: {
         id: job._id,
         active: job.active,
-        title: job.title,
+        jobrole: job.jobrole, // using jobrole instead of non-existent title
         company: job.company,
       },
+      updatedApplicationsCount
     });
   } catch (error) {
     console.error("Error updating job status:", error);
     return res.status(500).json({
       success: false,
-      message: "An error occurred while updating the job status.",
+      message: "An error occurred while updating the job status."
     });
   }
 };
 
-//get job by id     //need some changes_pending......but currently working
+//get job by id 
 export const getJobById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -562,7 +558,7 @@ export const getCompanyApplications = async (req, res) => {
 
     const applications = await applicationsModel
       .find({ recruiterId })
-      .populate("userId", "name image resume")
+      .populate("userId", "name image resume phone")
       .populate("jobId", "company title location date jobType salary");
 
     res.json({ success: true, applications });
@@ -572,14 +568,17 @@ export const getCompanyApplications = async (req, res) => {
   }
 };
 
-//get all aplicants for a job
+//get all aplicants for a job   ...need to verify
 export const getJobApplicants = async (req, res) => {
   try {
     const { jobId } = req.body;
 
     const applications = await applicationsModel
-      .find({ jobId })
-      .populate("userId", "name image resume");
+    .find({ jobId })
+    .populate("userId", "name image resume phone");
+  
+    console.log(applications);
+  
 
     res.json({ success: true, applications });
   } catch (error) {
@@ -587,60 +586,178 @@ export const getJobApplicants = async (req, res) => {
   }
 };
 
-//accept or reject an application
+//accept or reject an application  //need to verify
+// export const acceptRejectApplication = async (req, res) => {
+//   try {
+//     const recruiterId = req.body.recruiterId;
+//     const { applicationId, status } = req.body;
+
+//     if (!applicationId || !status) {
+//       return res.status(400).json({ success: false, message: "Application ID and status are required." });
+//     }
+
+//     // Validate status
+//     if (status.toLowerCase() !== "accepted" && status.toLowerCase() !== "rejected") {
+//       return res.status(400).json({ success: false, message: "Invalid status. Must be 'accepted' or 'rejected'." });
+//     }
+
+//     // Find application with related job and user details
+//     const application = await applicationsModel.findById(applicationId).populate("jobId userId");
+
+//     if (!application) {
+//       return res.status(404).json({ success: false, message: "Application not found." });
+//     }
+
+//     // Ensure the application is still pending
+//     if (application.status !== "pending") {
+//       return res.status(400).json({ success: false, message: "This application is already processed." });
+//     }
+
+//     const job = await jobsModel.findById(application.jobId);
+//     if (!job || job.recruiter.toString() !== recruiterId) {
+//       return res.status(403).json({ success: false, message: "Unauthorized action." });
+//     }
+
+//     // Update application status
+//     // application.status = "closed";
+//     // await application.save();
+
+//     // If accepted, deactivate the job
+//     // if (status.toLowerCase() === "accepted") {
+//     //   job.active = false;
+//     //   await job.save();
+//     // }
+//     await job.save();
+
+//     // Fetch user details
+//     const user = await userModel.findById(application.userId);
+
+//     // Send acceptance/rejection email
+//     await sendEmail(user.email, status, job.jobrole, job.company);
+
+//     return res.status(200).json({
+//       success: true,
+//       message: `Application ${status.toLowerCase()} successfully. Email sent to ${user.email}.`,
+//     });
+//   } catch (error) {
+//     console.error("Error updating application status:", error);
+//     return res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
 export const acceptRejectApplication = async (req, res) => {
   try {
+    // Ideally, recruiterId should come from auth middleware (e.g., req.recruiterId)
     const recruiterId = req.body.recruiterId;
     const { applicationId, status } = req.body;
 
     if (!applicationId || !status) {
-      return res.status(400).json({ success: false, message: "Application ID and status are required." });
+      return res.status(400).json({ 
+        success: false, 
+        message: "Application ID and status are required." 
+      });
     }
 
-    // Validate status
-    if (status.toLowerCase() !== "accepted" && status.toLowerCase() !== "rejected") {
-      return res.status(400).json({ success: false, message: "Invalid status. Must be 'accepted' or 'rejected'." });
+    // Validate status (only "accepted" or "rejected" allowed)
+    const validStatus = status.toLowerCase();
+    if (validStatus !== "accepted" && validStatus !== "rejected") {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid status. Must be 'accepted' or 'rejected'." 
+      });
     }
 
-    // Find application with related job and user details
-    const application = await applicationsModel.findById(applicationId).populate("jobId userId");
-
+    // Find the application and populate related job and user details.
+    // Make sure to populate the user's email (and any other required fields).
+    const application = await applicationsModel.findById(applicationId)
+      .populate("jobId", "jobrole company recruiter")
+      .populate("userId", "name email");
+      
     if (!application) {
-      return res.status(404).json({ success: false, message: "Application not found." });
+      return res.status(404).json({ 
+        success: false, 
+        message: "Application not found." 
+      });
     }
 
-    // Ensure the application is still pending
+    // Ensure the application is still pending (hasn't been processed before)
     if (application.status !== "pending") {
-      return res.status(400).json({ success: false, message: "This application is already processed." });
+      return res.status(400).json({ 
+        success: false, 
+        message: "This application is already processed." 
+      });
     }
 
+    // Check if the recruiter is authorized to update this application
     const job = await jobsModel.findById(application.jobId);
-    if (!job || job.recruiter.toString() !== recruiterId) {
-      return res.status(403).json({ success: false, message: "Unauthorized action." });
+    if (!job || job.recruiter.toString() !== recruiterId.toString()) {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Unauthorized action." 
+      });
     }
 
-    // Update application status
-    application.status = "closed";
+    // Update the application status to accepted or rejected
+    application.status = validStatus;
     await application.save();
 
-    // If accepted, deactivate the job
-    if (status.toLowerCase() === "accepted") {
-      job.active = false;
-      await job.save();
-    }
-
-    // Fetch user details
-    const user = await userModel.findById(application.userId);
-
-    // Send acceptance/rejection email
-    await sendEmail(user.email, status, job.jobrole, job.company);
+    // Send email to the applicant with the result.
+    // sendEmail(email, status, jobrole, company)
+    await sendEmail(application.userId.email, validStatus, job.jobrole, job.company);
 
     return res.status(200).json({
       success: true,
-      message: `Application ${status.toLowerCase()} successfully. Email sent to ${user.email}.`,
+      message: `Application ${validStatus} successfully. Email sent to ${application.userId.email}.`
     });
   } catch (error) {
     console.error("Error updating application status:", error);
-    return res.status(500).json({ success: false, message: "Internal Server Error" });
+    return res.status(500).json({ 
+      success: false, 
+      message: "Internal Server Error" 
+    });
   }
 };
+
+//delete job 
+export const deleteJob = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const recruiterId = req.body.recruiterId;
+
+    if (!jobId) {
+      return res.status(400).json({
+        success: false,
+        message: "Job ID is required.",
+      });
+    }
+
+    const job = await jobsModel.findById(jobId);
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found.",
+      });
+    }
+
+    if (job.recruiter.toString() !== recruiterId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this job.",
+      });
+    }
+
+    await jobsModel.findByIdAndDelete(jobId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Job deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+

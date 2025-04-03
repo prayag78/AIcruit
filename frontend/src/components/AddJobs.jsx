@@ -214,7 +214,7 @@ const AddJobs = () => {
         {/* Experience */}
         <div>
           <label className="block font-medium">Experience</label>
-          <input
+          <textarea
             type="text"
             name="experience"
             value={jobData.experience}
@@ -240,13 +240,14 @@ const AddJobs = () => {
         <div>
           <label className="block font-medium">Job Description</label>
           <textarea
+            type="text"
             name="description"
             value={jobData.description}
             onChange={handleChange}
             className="w-full p-2 border rounded"
             placeholder="Enter job description"
             required
-          ></textarea>
+          />
         </div>
         {/* Responsibilities */}
         <div>

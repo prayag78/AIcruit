@@ -76,7 +76,7 @@ const U_login = () => {
           <img src="/your-illustration.png" alt="Login Illustration" className="w-80 h-auto" />
         </div>
         <div className="flex flex-col justify-center items-center p-8 flex-1">
-          <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">WELCOME TO ARYTIC.</h2>
+          <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">WELCOME TO AIcruit.</h2>
           <form onSubmit={onSubmitHandler} className="w-full">
             {state === "Sign Up" && <InputField label="Full Name" type="text" value={name} setValue={setName} />}
             <InputField label="Email" type="email" value={email} setValue={setEmail} />

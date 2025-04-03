@@ -18,12 +18,13 @@ const Applications = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  console.log("applications" , applications);
+  //console.log("applications", applications);
 
   const statusColors = {
     pending: "bg-yellow-100 text-yellow-800",
     accepted: "bg-green-100 text-green-800",
     rejected: "bg-red-100 text-red-800",
+    closed: "bg-gray-100 text-gray-800",
   };
 
   const fetchApplications = async () => {
@@ -57,7 +58,7 @@ const Applications = () => {
       const { data } = await axios.put(
         `${backendUrl}/api/recruiter/update-application-status`,
         { applicationId, status: newStatus },
-        { headers: { token } }
+        { headers: { token: token } }
       );
 
       if (data.success) {
@@ -135,8 +136,9 @@ const Applications = () => {
                   <div className="flex items-center text-gray-600">
                     <Calendar className="w-4 h-4 mr-2 text-gray-500" />
                     <span>
-                      {application.createdAt
-                        ? new Date(application.createdAt).toLocaleDateString()
+                      Applied Date:{" "}
+                      {application.date
+                        ? new Date(application.date).toLocaleDateString()
                         : "Unknown date"}
                     </span>
                   </div>
@@ -151,19 +153,19 @@ const Applications = () => {
                     </a>
                   </div>
 
-                  {application.phone && (
+                  {application.userId?.phone && (
                     <div className="flex items-center text-gray-600">
                       <Phone className="w-4 h-4 mr-2 text-gray-500" />
-                      <span>{application.phone}</span>
+                      <span>{application.userId.phone}</span>
                     </div>
                   )}
 
                   <div className="flex items-center text-gray-600">
                     <FileText className="w-4 h-4 mr-2 text-gray-500" />
                     {application.userId?.resume ? (
-                      <a 
-                        href={application.userId.resume} 
-                        target="_blank" 
+                      <a
+                        href={application.userId.resume}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center hover:text-blue-600"
                       >
@@ -177,26 +179,37 @@ const Applications = () => {
                 </div>
 
                 <div className="mt-4 flex gap-2">
-                  {application.status !== "accepted" && (
-                    <button
-                      onClick={() =>
-                        handleStatusChange(application._id, "accepted")
-                      }
-                      className="flex-1 px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200"
-                    >
-                      Accept
-                    </button>
-                  )}
+                  {application.status === "pending" ? (
+                    <>
+                      <button
+                        onClick={() =>
+                          handleStatusChange(application._id, "accepted")
+                        }
+                        className="flex-1 px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200"
+                      >
+                        Accept
+                      </button>
 
-                  {application.status !== "rejected" && (
-                    <button
-                      onClick={() =>
-                        handleStatusChange(application._id, "rejected")
-                      }
-                      className="flex-1 px-4 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200"
+                      <button
+                        onClick={() =>
+                          handleStatusChange(application._id, "rejected")
+                        }
+                        className="flex-1 px-4 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  ) : (
+                    <div
+                      className={`flex-1 px-4 py-2 rounded-md text-center ${
+                        application.status === "accepted"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
                     >
-                      Reject
-                    </button>
+                      {application.status.charAt(0).toUpperCase() +
+                        application.status.slice(1)}
+                    </div>
                   )}
                 </div>
               </div>
