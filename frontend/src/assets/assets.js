@@ -27,6 +27,7 @@ import post_in from './post_in.svg'
 import jobseeker from './jobseeker.png'
 import recruiter from './recruiter.png'
 import resume_upload from './resume_upload_icon.svg'
+import AIcruit from './1.png'
 
 export const assets = {
   bookmark_icon,
@@ -58,7 +59,7 @@ export const assets = {
   jobseeker,
   recruiter,
   resume_upload,
-  
+  AIcruit,
 };
 
 export const jobsB_h = [

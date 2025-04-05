@@ -7,38 +7,46 @@ const JobsB = () => {
   const navigate = useNavigate();
 
   const handleFindJobs = () => {
-    navigate("/portal?applicationtype=job"); // Redirect with job filter
+    navigate("/portal?applicationtype=job");
   };
 
   return (
-    <div className="flex flex-col ">
-      <div className="flex justify-around items-center px-6  bg-white m-10">
-        <div className="flex flex-col justify-start max-w-md ">
-          <p className="text-xl tracking-tight sm:text-5xl lg:text-5xl">
+    <div className="flex flex-col px-4 sm:px-8">
+      <div className="flex flex-col lg:flex-row justify-around items-center bg-white m-4 sm:m-10 gap-10">
+        {/* Left Content */}
+        <div className="flex flex-col justify-start max-w-md text-center lg:text-left">
+          <p className="text-2xl sm:text-4xl lg:text-5xl font-semibold leading-tight">
             Your Dream Job Is Just a Click Away
           </p>
-          <p className="mt-6 text-xl text-gray-600">
+          <p className="mt-6 text-lg sm:text-xl text-gray-600">
             Connect with the best companies and secure your ideal role
           </p>
-          <div className="flex justify-start space-x-4 mt-3">
-            <button onClick={handleFindJobs} className="inline-flex items-center rounded-full bg-blue2 px-8 py-2 text-base font-medium text-white hover:bg-blue2/90">
+          <div className="flex justify-center lg:justify-start space-x-4 mt-5 flex-wrap">
+            <button
+              onClick={handleFindJobs}
+              className="inline-flex items-center rounded-full bg-blue2 px-8 py-2 text-base font-medium text-white hover:bg-blue2/90"
+            >
               Find Jobs
             </button>
-            <button onClick={()=> navigate("/recruiter-login")} className="inline-flex items-center rounded-full bg-white px-8 py-2 text-base font-medium text-blue2 border-2 border-blue2">
+            <button
+              onClick={() => navigate("/recruiter-login")}
+              className="inline-flex items-center rounded-full bg-white px-8 py-2 text-base font-medium text-blue2 border-2 border-blue2"
+            >
               Post Jobs
             </button>
           </div>
         </div>
 
-        <div className="relative h-[300px] w-[300px] md:h-[400px] md:w-[400px] flex items-center justify-center ">
-          {/* Background animated locks */}
+        {/* Right Animation (Hidden on small screens) */}
+        <div className="relative h-[300px] w-[300px] md:h-[400px] md:w-[400px] items-center justify-center hidden md:flex">
+          {/* Background animated logos */}
           {jobsB_h.map((item, i) => (
             <div
               key={i}
               className="absolute h-14 w-14 flex items-center justify-center rounded-lg bg-blue-200 animate-spin-slow mt-20 ml-12"
               style={{ animationDelay: `${i * (20 / 6)}s` }}
             >
-              <img src={item.logo} />
+              <img src={item.logo} className="w-10 h-10 object-contain" />
             </div>
           ))}
 
@@ -51,12 +59,13 @@ const JobsB = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-evenly space-x-10 m-10 mt-20">
-        <div className="flex flex-col font-semibold text-lg">
+      {/* Categories */}
+      <div className="flex flex-col items-center sm:flex-row sm:justify-evenly space-y-6 sm:space-y-0 sm:space-x-10 m-4 sm:m-10 mt-20">
+        <div className="flex flex-col font-semibold text-lg text-center sm:text-left">
           <p>Jobs</p>
           <p>Category</p>
         </div>
-        <div className="flex space-x-6">
+        <div className="flex flex-wrap justify-center gap-4">
           {[
             "Data Analyst",
             "Software Development",
@@ -67,7 +76,7 @@ const JobsB = () => {
           ].map((category, index) => (
             <div
               key={index}
-              className="bg-gray-200 px-6 py-3 rounded-lg text-center text-black shadow-sm cursor-pointer hover:bg-gray-300 transition"
+              className="bg-gray-200 px-6 py-3 rounded-lg text-black shadow-sm cursor-pointer hover:bg-gray-300 transition"
             >
               {category}
             </div>

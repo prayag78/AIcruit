@@ -88,7 +88,7 @@ export const AppContextProvider = ({ children }) => {
     }
   }
 
-  console.log("recruiter data : " , recruiterdata)
+  //console.log("recruiter data : " , recruiterdata)
 
 
   useEffect(() => {

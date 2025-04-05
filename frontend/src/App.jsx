@@ -56,6 +56,9 @@ const App = () => {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/portal" element={<Portal />} />
             <Route path="/portal/:id" element={<Portal />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/recruiter-login" element={<R_login />} />
+            <Route path="/user-login" element={<U_login />} />
             <Route path="*" element={<Navigate to="/" />} />
           </>
         ) : null}

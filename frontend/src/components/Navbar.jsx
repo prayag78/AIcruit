@@ -16,9 +16,9 @@ const Navbar = () => {
     <div className="flex items-center justify-between text-sm py-2 px-2 border-b border-gray-200">
       <NavLink to="/">
         <img
-          src={assets.institute_icon}
-          width="20px"
-          height="20px"
+          src={assets.AIcruit}
+          width="60px"
+          height="60px"
           className="cursor-pointer"
         />
       </NavLink>
@@ -62,11 +62,11 @@ const Navbar = () => {
               <li className="py-1">Dashboard</li>
               <hr className="border-none outline-none h-0.5 bg-blue1 w-10/12 m-auto hidden " />
             </NavLink> */}
-            <NavLink to="/recruiter-profile">
+            {/* <NavLink to="/recruiter-profile">
             <li className="py-1">
                 <img src={assets.profile_icon} width="20px" height="20px" />
             </li>
-            </NavLink>
+            </NavLink> */}
           </>
         )}
       </ul>

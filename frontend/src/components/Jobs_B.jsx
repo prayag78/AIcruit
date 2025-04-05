@@ -54,7 +54,7 @@ const Jobs_B = () => {
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Left side - Text and CTA */}
-          <div className="md:w-1/2 space-y-6">
+          <div className="md:w-1/2 space-y-6 flex flex-col items-start">
             <h1 className="text-2xl md:text-3xl font-semibold text-gray-800">Post Jobs & Internship</h1>
             <button onClick={()=> navigate('/recruiter-login')} className="bg-[#1a4677] hover:bg-[#0f3561] text-white rounded-full px-8 py-2">Post Now</button>
           </div>
