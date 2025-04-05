@@ -25,16 +25,28 @@ const Jobs_R = () => {
     try {
       setLoading(true);
       setError(null);
-
-      const { data } = await axios.get(
-        `${backendUrl}/api/user/recommended-jobs`,
-        {
-          headers: { token: utoken },
-        }
-      );
-
+  
+      const cached = JSON.parse(localStorage.getItem("recommendedJobsCache"));
+      const now = new Date().getTime();
+  
+      // Check if cached and less than 24 hours old
+      if (cached && now - cached.timestamp < 24 * 60 * 60 * 1000) {
+        setRejobs(cached.data);
+        setLoading(false);
+        return;
+      }
+  
+      const { data } = await axios.get(`${backendUrl}/api/user/recommended-jobs`, {
+        headers: { token: utoken },
+      });
+  
       if (data.success && data.recommendations) {
         setRejobs(data.recommendations);
+  
+        localStorage.setItem(
+          "recommendedJobsCache",
+          JSON.stringify({ data: data.recommendations, timestamp: now })
+        );
       } else {
         setError(data.message || "No recommendations found");
         toast.info(data.message || "No job recommendations available yet");
@@ -46,6 +58,7 @@ const Jobs_R = () => {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     if (utoken) {
@@ -54,7 +67,7 @@ const Jobs_R = () => {
   }, [userData]);
 
   if (loading) {
-    return <div className="p-8 m-8">Loading recommendations...</div>;
+    return <div className="flex justify-center items-center p-8 m-8">Loading recommendations...</div>;
   }
 
   if (error) {

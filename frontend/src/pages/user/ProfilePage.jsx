@@ -91,6 +91,7 @@ const ProfilePage = () => {
       );
 
       if (data.success) {
+        
         toast.success(data.message);
         await userProfile();
         setIsEdit(false);
@@ -318,7 +319,7 @@ const ProfilePage = () => {
                     placeholder="Add new skill"
                     onChange={(e) => setNewSkill(e.target.value)}
                     className="border p-1 rounded flex-grow"
-                    onKeyPress={(e) => e.key === "Enter" && addSkill()}
+                    onKeyDown ={(e) => e.key === "Enter" && addSkill()}
                   />
                   <button
                     onClick={addSkill}

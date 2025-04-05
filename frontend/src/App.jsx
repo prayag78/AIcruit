@@ -30,51 +30,53 @@ const App = () => {
   const isLoginPage = loginPages.includes(location.pathname);
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       {!isLoginPage && <Navbar />}
       <ToastContainer />
-      <Routes>
-        {/* Public Routes - Only accessible to new users */}
-        {!utoken && !token ? (
-          <>
-            <Route path="/login" element={<Login />} />
-            <Route path="/recruiter-login" element={<R_login />} />
-            <Route path="/user-login" element={<U_login />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </>
-        ) : null}
+      <div className="flex-1">
+        <Routes>
+          {/* Public Routes - Only accessible to new users */}
+          {!utoken && !token ? (
+            <>
+              <Route path="/login" element={<Login />} />
+              <Route path="/recruiter-login" element={<R_login />} />
+              <Route path="/user-login" element={<U_login />} />
+              <Route path="*" element={<Navigate to="/login" />} />
+            </>
+          ) : null}
 
-        {/* User Routes - Only accessible if user is logged in */}
-        {utoken ? (
-          <>
-            <Route path="/" element={<Home />} />
-            <Route path="/jobs" element={<JobsPage />} />
-            <Route path="/internships" element={<InternshipsPage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/portal" element={<Portal />} />
-            <Route path="/portal/:id" element={<Portal />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/recruiter-login" element={<R_login />} />
-            <Route path="/user-login" element={<U_login />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        ) : null}
+          {/* User Routes - Only accessible if user is logged in */}
+          {utoken ? (
+            <>
+              <Route path="/" element={<Home />} />
+              <Route path="/jobs" element={<JobsPage />} />
+              <Route path="/internships" element={<InternshipsPage />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/portal" element={<Portal />} />
+              <Route path="/portal/:id" element={<Portal />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/recruiter-login" element={<R_login />} />
+              <Route path="/user-login" element={<U_login />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </>
+          ) : null}
 
-        {/* Recruiter Routes - Only accessible if recruiter is logged in */}
-        {token ? (
-          <Route element={<RecruiterLayout />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/recruiter-profile" element={<Rprofile />} />
-            <Route path="/post" element={<AddJobs />} />
-            <Route path="/manage" element={<ManageJobs />} />
-            <Route path="/applications" element={<Applications />} />
-            <Route path="*" element={<Navigate to="/dashboard" />} />
-          </Route>
-        ) : null}
-      </Routes>
+          {/* Recruiter Routes - Only accessible if recruiter is logged in */}
+          {token ? (
+            <Route element={<RecruiterLayout />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/recruiter-profile" element={<Rprofile />} />
+              <Route path="/post" element={<AddJobs />} />
+              <Route path="/manage" element={<ManageJobs />} />
+              <Route path="/applications" element={<Applications />} />
+              <Route path="*" element={<Navigate to="/dashboard" />} />
+            </Route>
+          ) : null}
+        </Routes>
+      </div>
       {!isLoginPage && <Footer />}
     </div>
   );

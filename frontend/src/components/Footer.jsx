@@ -1,6 +1,7 @@
 // Footer.jsx
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
+import { assets } from "../assets/assets";
 import { AppContext } from "../context/AppContext";
 
 const Footer = () => {
@@ -11,15 +12,18 @@ const Footer = () => {
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-start px-6 gap-8">
         {/* Left Section - Email & Copyright */}
         <div className="mb-4 md:mb-0">
-          <div className="w-32 h-12 bg-gray-300 mb-2"></div>
+          <img src={assets.logo}
+            width={140}
+            height={100} alt="AIcruit Logo" className="mb-2"  // Placeholder for Logo
+          />
           {/* Placeholder for Logo */}
           <a
             href="mailto:support@AIcruit.com"
-            className="text-blue-600 hover:underline"
+            className="text-blue-600 hover:underline ml-2"
           >
             support@AIcruit.com
           </a>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 text-sm mt-1 ml-2">
             © 2025 AIcruit. All Rights Reserved.
           </p>
         </div>

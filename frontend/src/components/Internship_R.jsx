@@ -21,31 +21,73 @@ const Internship_R = () => {
     navigate(`/portal/${jobId}`);
   };
 
+  // const fetchReInternships = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+
+  //     const { data } = await axios.get(
+  //       `${backendUrl}/api/user/recommended-internships`,
+  //       {
+  //         headers: { token: utoken },
+  //       }
+  //     );
+
+  //     if (data.success && data.recommendations) {
+  //       setReinternships(data.recommendations);
+  //     } else {
+  //       setError(data.message || "No recommendations found");
+  //       toast.info(data.message || "No job recommendations available yet");
+  //     }
+  //   } catch (error) {
+  //     setError("Failed to fetch recommendations");
+  //     toast.error("Error fetching recommended jobs");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+ 
   const fetchReInternships = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  try {
+    setLoading(true);
+    setError(null);
 
-      const { data } = await axios.get(
-        `${backendUrl}/api/user/recommended-internships`,
-        {
-          headers: { token: utoken },
-        }
-      );
+    const cached = JSON.parse(localStorage.getItem("recommendedInternshipsCache"));
+    const now = new Date().getTime();
 
-      if (data.success && data.recommendations) {
-        setReinternships(data.recommendations);
-      } else {
-        setError(data.message || "No recommendations found");
-        toast.info(data.message || "No job recommendations available yet");
-      }
-    } catch (error) {
-      setError("Failed to fetch recommendations");
-      toast.error("Error fetching recommended jobs");
-    } finally {
+    // If cached internships exist and are less than 24 hours old
+    if (cached && now - cached.timestamp < 24 * 60 * 60 * 1000) {
+      setReinternships(cached.data);
       setLoading(false);
+      return;
     }
-  };
+
+    const { data } = await axios.get(
+      `${backendUrl}/api/user/recommended-internships`,
+      {
+        headers: { token: utoken },
+      }
+    );
+
+    if (data.success && data.recommendations) {
+      setReinternships(data.recommendations);
+
+      // 💾 Store to localStorage with timestamp
+      localStorage.setItem(
+        "recommendedInternshipsCache",
+        JSON.stringify({ data: data.recommendations, timestamp: now })
+      );
+    } else {
+      setError(data.message || "No recommendations found");
+      toast.info(data.message || "No internship recommendations available yet");
+    }
+  } catch (error) {
+    setError("Failed to fetch recommendations");
+    toast.error("Error fetching recommended internships");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     if (utoken) {
@@ -54,7 +96,7 @@ const Internship_R = () => {
   }, [utoken]);
 
   if (loading) {
-    return <div className="p-8 m-8">Loading recommendations...</div>;
+    return <div className="flex justify-center items-center p-8 m-8">Loading recommendations...</div>;
   }
 
   if (error) {
@@ -63,10 +105,10 @@ const Internship_R = () => {
 
   return (
     <div className="p-2 md:p-6 m-2 md:m-8 flex flex-col">
-      {/* Recommended Jobs Section */}
+      {/* Recommended Internships Section */}
       <div className="m-2 md:m-8">
         <h2 className="text-xl md:text-2xl font-semibold">
-          Recommended Jobs For You
+          Recommended Internship For You
         </h2>
         <p className="text-gray-600">
           Based on your profile and skills, we've selected these opportunities
@@ -146,10 +188,10 @@ const Internship_R = () => {
         )}
       </div>
 
-      {/* Explore Other Jobs */}
+      {/* Explore Other Internships */}
       <div className="m-2 md:m-8">
               <h2 className="text-xl md:text-2xl font-semibold">
-                Explore Other Jobs
+                Explore Other Internships
               </h2>
               <p className="text-gray-600">
                 Discover more opportunities that might interest you based on your
