@@ -73,7 +73,10 @@ const Navbar = () => {
               </NavLink>
             </>
           )}
-          {token && <>{/* Add recruiter stuff if needed */}</>}
+          {token && 
+          <>
+          {/* Add recruiter stuff if needed */}
+          </>}
         </ul>
 
         {/* Mobile Icon */}

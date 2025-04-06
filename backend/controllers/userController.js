@@ -185,7 +185,7 @@ export const recommendedJobs = async (req, res) => {
 
     const jobs = await jobsModel.find(
       { applicationtype: "job" },
-      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 , postdate: 1, location: 1 , deadline: 1}
+      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 , postdate: 1, location: 1 , deadline: 1,  applicants: 1}  
     );
 
     if (jobs.length === 0) {
@@ -262,6 +262,7 @@ export const recommendedJobs = async (req, res) => {
           postdate: matchedJob?.postdate || "Unknown",
           location: matchedJob?.location || "Unknown",
           deadline: matchedJob?.deadline || "Unknown",
+          applicants: matchedJob?.applicants || [],
           matchReason,
         };
       });
@@ -307,7 +308,7 @@ export const recommendedInternships = async (req, res) => {
     // Fetch jobs where applicationtype is "job"
     const jobs = await jobsModel.find(
       { applicationtype: "internship" },
-      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 , postdate: 1, location: 1 , deadline: 1}
+      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 , postdate: 1, location: 1 , deadline: 1 , applicants: 1}
     );
 
     // Debug: Log the jobs fetched from the database
@@ -395,6 +396,7 @@ export const recommendedInternships = async (req, res) => {
           postdate: matchedJob?.postdate || "Unknown",
           location: matchedJob?.location || "Unknown",
           deadline: matchedJob?.deadline || "Unknown",
+          applicants: matchedJob?.applicants || [],
           matchScore: job.matchScore,
           matchReason,
         };

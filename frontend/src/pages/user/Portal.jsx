@@ -97,6 +97,8 @@ const Portal = () => {
         }
       );
       if (data.success) {
+        localStorage.removeItem("recommendedJobsCache");
+        localStorage.removeItem("recommendedInternshipsCache");
         toast.success("Applied successfully");
       } else {
         toast.error(data.message);

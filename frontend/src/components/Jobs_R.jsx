@@ -13,7 +13,8 @@ const Jobs_R = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  //console.log("alljobs Data:", alljobs);
+  console.log("rejobs Data:", rejobs);
+  console.log("alljobs Data:", alljobs);
 
   const navigate = useNavigate();
 

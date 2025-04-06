@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {FaSquarePhone,FaFilePdf} from "react-icons/fa6";
+import { FaSquarePhone, FaFilePdf } from "react-icons/fa6";
 import { MdEmail, MdEdit } from "react-icons/md";
 import { FaUniversity } from "react-icons/fa";
 import { AppContext } from "../../context/AppContext";
@@ -13,8 +13,8 @@ const ProfilePage = () => {
   const { utoken, setUtoken, userData, setUserData, userProfile, backendUrl } =
     useContext(AppContext);
   const [isEdit, setIsEdit] = useState(false);
-  const [image, setImage] = useState(null); 
-  const [resume, setResume] = useState(null); 
+  const [image, setImage] = useState(null);
+  const [resume, setResume] = useState(null);
   const [resumePreview, setResumePreview] = useState(null);
   const [newSkill, setNewSkill] = useState("");
   const [skills, setSkills] = useState([]);
@@ -91,7 +91,8 @@ const ProfilePage = () => {
       );
 
       if (data.success) {
-        
+        localStorage.removeItem("recommendedJobsCache");
+        localStorage.removeItem("recommendedInternshipsCache");
         toast.success(data.message);
         await userProfile();
         setIsEdit(false);
@@ -319,7 +320,7 @@ const ProfilePage = () => {
                     placeholder="Add new skill"
                     onChange={(e) => setNewSkill(e.target.value)}
                     className="border p-1 rounded flex-grow"
-                    onKeyDown ={(e) => e.key === "Enter" && addSkill()}
+                    onKeyDown={(e) => e.key === "Enter" && addSkill()}
                   />
                   <button
                     onClick={addSkill}
