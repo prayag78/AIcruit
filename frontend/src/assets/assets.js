@@ -28,7 +28,6 @@ import jobseeker from './jobseeker.png'
 import recruiter from './recruiter.png'
 import resume_upload from './resume_upload_icon.svg'
 import AIcruit from './1.png'
-import JoB from './JoB.jpg'
 import logo from './logo1.png'
 import relo from './recruiterlogin.png'
 import uslo from './userlogin.png'
@@ -64,7 +63,6 @@ export const assets = {
   recruiter,
   resume_upload,
   AIcruit,
-  JoB,
   logo,
   relo,
   uslo,

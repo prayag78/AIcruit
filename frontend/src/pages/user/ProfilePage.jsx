@@ -218,16 +218,26 @@ const ProfilePage = () => {
               </div>
             </div>
           </div>
-          <MdEdit
+          
+          {isEdit ? (
+          <button
+            onClick={updateProfile}
+            className="bg-green-400 text-white px-4 py-2 rounded-xl mt-4"
+          >
+            Save
+          </button>
+        ): <MdEdit
             className="text-xl cursor-pointer"
             onClick={() => setIsEdit(!isEdit)}
-          />
+          />}
         </div>
 
         <div className="mb-4">
+          
           <p className="flex items-center gap-2 text-gray-700">
             <MdEmail /> {userData.email}
           </p>
+          
           <div className="flex items-center gap-2">
             <FaSquarePhone />
             {isEdit ? (
