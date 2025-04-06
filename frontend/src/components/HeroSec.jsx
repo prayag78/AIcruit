@@ -26,7 +26,7 @@ const HeroSec = () => {
           <div className="grid lg:mt-20 gap-12 lg:grid-cols-2">
             {/* Left Column - Text Content */}
             <div className="max-w-2xl z-10 mt-4 pt-6">
-              <h1 className="text-3xl sm:text-4xl lg:text-6xl tracking-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-6xl tracking-wide">
                 Land Your Dream Job Effortlessly with
                 <span className="text-blue2">AI-Powered</span> Matching
               </h1>

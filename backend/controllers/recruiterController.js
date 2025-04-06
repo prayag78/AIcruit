@@ -1,13 +1,12 @@
 import recruiterModel from "../models/recruiterModel.js";
-import userModel from "../models/userModel.js";
 import jobsModel from "../models/jobsModel.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import applicationsModel from "../models/applicationsModel.js";
 import nodemailer from "nodemailer";
-import mongoose from "mongoose";
 import sendEmail from "../utils/emails.js";
+import { v2 as cloudinary } from "cloudinary";
 
 const otpStore = new Map();
 
@@ -273,16 +272,52 @@ export const getCompanyData = async (req, res) => {
 export const updateCompanyData = async (req, res) => {
   try {
     const { recruiterId, name, company, location, phone } = req.body;
+    const imageFile = req.file;
 
-    await recruiterModel.findByIdAndUpdate(
+    console.log("Request Body:", req.body); // Debugging
+
+    if (!recruiterId) {
+      return res.status(400).json({
+        success: false,
+        message: "recruiterId is required",
+      });
+    }
+
+    const updatedFields = {
+      name,
+      company,
+      location,
+      phone,
+    };
+
+    if (imageFile) {
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: "image",
+        type: "upload",
+      });
+      updatedFields.image = imageUpload.secure_url;
+    }
+
+    const updated = await recruiterModel.findByIdAndUpdate(
       recruiterId,
-      { name, company, location, phone },
+      updatedFields,
       { new: true }
     );
 
-    res.json({ success: true, message: "Profile successfully Updated" });
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        message: "Recruiter not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Profile successfully updated",
+      data: updated,
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Error updating company data:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

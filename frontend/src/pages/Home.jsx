@@ -17,7 +17,7 @@ const Home = () => {
       <div className="w-full h-[55dvh] bg-gradient-to-b">
         <div className="mx-auto px-4 sm:px-6 lg:px-60 py-10 md:py-20">
           <h1 className="text-center text-xl sm:text-2xl lg:text-4xl leading-relaxed md:leading-relaxed lg:leading-relaxed bg-gradient-to-r from-[#0C87B8] to-[#645991] bg-clip-text text-transparent">
-            Introducing our AI-powered job portal - the ultimate destination for
+            Introducing our AI-powered job portal - the ultimate destination for 
             your career growth. Harness the power of cutting-edge technology to
             unlock personalized job recommendations, streamline your application
             process

@@ -10,8 +10,7 @@ import axios from "axios";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { utoken, setUtoken, userData, setUserData, userProfile, backendUrl } =
-    useContext(AppContext);
+  const { utoken, setUtoken, userData, setUserData, userProfile, backendUrl } = useContext(AppContext);
   const [isEdit, setIsEdit] = useState(false);
   const [image, setImage] = useState(null);
   const [resume, setResume] = useState(null);
@@ -401,30 +400,30 @@ const ProfilePage = () => {
       </div>
 
       {/* Application Status */}
-      <div className="flex flex-col h-[70vh] gap-4 p-4 ">
+      <div className="flex flex-col min-h-[70vh] gap-4 p-4">
         <h2 className="text-xl font-bold text-gray-800">Applied Jobs</h2>
 
-        {/* Desktop Table (shown on medium screens and up) */}
-        <div className="hidden md:block overflow-auto rounded-lg border border-gray-200 shadow-sm">
-          <table className="w-full min-w-[800px]">
+        {/* Desktop Table (shown on large screens and up) */}
+        <div className="hidden lg:block overflow-auto rounded-lg border border-gray-200 shadow-sm h-[70vh] ">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Job Role
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Company
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Location
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Salary
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
               </tr>
@@ -435,35 +434,35 @@ const ProfilePage = () => {
                   key={app._id}
                   className="hover:bg-gray-50 transition-colors"
                 >
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
                     {app.date ? new Date(app.date).toLocaleDateString() : "N/A"}
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    {app.jobId?.description || "Not specified"}
+                  <td className="px-4 py-4 text-sm font-medium text-gray-900">
+                    {app.jobId?.jobrole || "Not specified"}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-4 py-4 text-sm text-gray-500">
                     {app.recruiterId?.company || "Not specified"}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
                     {app.jobId?.location || "Remote"}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                  <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
                     {app.jobId?.salary || "Not specified"}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-4 whitespace-nowrap">
                     <span
                       className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold shadow-sm 
-                      ${
-                        app.status === "pending"
-                          ? "bg-yellow-200 text-yellow-900 border border-yellow-400"
-                          : app.status === "accepted"
-                          ? "bg-green-200 text-green-900 border border-green-400"
-                          : app.status === "rejected"
-                          ? "bg-red-200 text-red-900 border border-red-400"
-                          : app.status === "closed"
-                          ? "bg-gray-200 text-gray-900 border border-gray-400"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
+                ${
+                  app.status === "pending"
+                    ? "bg-yellow-200 text-yellow-900 border border-yellow-400"
+                    : app.status === "accepted"
+                    ? "bg-green-200 text-green-900 border border-green-400"
+                    : app.status === "rejected"
+                    ? "bg-red-200 text-red-900 border border-red-400"
+                    : app.status === "closed"
+                    ? "bg-gray-200 text-gray-900 border border-gray-400"
+                    : "bg-gray-100 text-gray-800"
+                }`}
                     >
                       {app.status
                         ? app.status.charAt(0).toUpperCase() +
@@ -477,36 +476,102 @@ const ProfilePage = () => {
           </table>
         </div>
 
+        {/* Medium Screen Table (shown on md screens) */}
+        <div className="hidden md:block lg:hidden overflow-auto rounded-lg border border-gray-200 shadow-sm h-[70vh] ">
+          <table className="w-full min-w-[500px]">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Job Role
+                </th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Company
+                </th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Details
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {applications.map((app) => (
+                <tr
+                  key={app._id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-3 py-3 text-sm font-medium text-gray-900">
+                    <div>{app.jobId?.jobrole || "Not specified"}</div>
+                    <div className="text-xs text-gray-500">
+                      {app.date
+                        ? new Date(app.date).toLocaleDateString()
+                        : "N/A"}
+                    </div>
+                  </td>
+                  <td className="px-3 py-3 text-sm text-gray-500">
+                    {app.recruiterId?.company || "Not specified"}
+                  </td>
+                  <td className="px-3 py-3">
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold 
+                ${
+                  app.status === "pending"
+                    ? "bg-yellow-200 text-yellow-900 border border-yellow-400"
+                    : app.status === "accepted"
+                    ? "bg-green-200 text-green-900 border border-green-400"
+                    : app.status === "rejected"
+                    ? "bg-red-200 text-red-900 border border-red-400"
+                    : app.status === "closed"
+                    ? "bg-gray-200 text-gray-900 border border-gray-400"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+                    >
+                      {app.status
+                        ? app.status.charAt(0).toUpperCase() +
+                          app.status.slice(1)
+                        : "Unknown"}
+                    </span>
+                  </td>
+                  <td className="px-3 py-3 text-sm text-gray-500">
+                    <div>{app.jobId?.location || "Remote"}</div>
+                    <div>{app.jobId?.salary || "Not specified"}</div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
         {/* Mobile Cards (shown on small screens) */}
-        <div className="md:hidden space-y-4">
+        <div className="md:hidden space-y-3 h-[80vh] overflow-auto">
           {applications.map((app) => (
             <div
               key={app._id}
-              className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
+              className="bg-white p-3 rounded-lg shadow-sm border border-gray-200"
             >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {app.jobId?.description || "Not specified"}
+              <div className="flex justify-between items-start gap-2">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-medium text-gray-900 truncate">
+                    {app.jobId?.jobrole || "Not specified"}
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 truncate">
                     {app.recruiterId?.company || "Not specified"}
                   </p>
                 </div>
-
                 <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                  ${
-                    app.status === "pending"
-                      ? "bg-yellow-200 text-yellow-900 border border-yellow-400"
-                      : app.status === "accepted"
-                      ? "bg-green-200 text-green-900 border border-green-400"
-                      : app.status === "rejected"
-                      ? "bg-red-200 text-red-900 border border-red-400"
-                      : app.status === "closed"
-                      ? "bg-gray-200 text-gray-900 border border-gray-400"
-                      : "bg-gray-100 text-gray-800"
-                  }`}
+                  className={`flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium 
+            ${
+              app.status === "pending"
+                ? "bg-yellow-200 text-yellow-900 border border-yellow-400"
+                : app.status === "accepted"
+                ? "bg-green-200 text-green-900 border border-green-400"
+                : app.status === "rejected"
+                ? "bg-red-200 text-red-900 border border-red-400"
+                : app.status === "closed"
+                ? "bg-gray-200 text-gray-900 border border-gray-400"
+                : "bg-gray-100 text-gray-800"
+            }`}
                 >
                   {app.status
                     ? app.status.charAt(0).toUpperCase() + app.status.slice(1)
@@ -514,22 +579,22 @@ const ProfilePage = () => {
                 </span>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
                 <div>
                   <p className="text-xs text-gray-500">Date</p>
-                  <p className="text-sm text-gray-900">
+                  <p className="text-gray-900 truncate">
                     {app.date ? new Date(app.date).toLocaleDateString() : "N/A"}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Location</p>
-                  <p className="text-sm text-gray-900">
+                  <p className="text-gray-900 truncate">
                     {app.jobId?.location || "Remote"}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Salary</p>
-                  <p className="text-sm text-gray-900">
+                  <p className="text-gray-900 truncate">
                     {app.jobId?.salary || "Not specified"}
                   </p>
                 </div>
@@ -537,6 +602,7 @@ const ProfilePage = () => {
             </div>
           ))}
         </div>
+
       </div>
     </div>
   );

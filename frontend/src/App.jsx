@@ -67,12 +67,12 @@ const App = () => {
           {/* Recruiter Routes - Only accessible if recruiter is logged in */}
           {token ? (
             <Route element={<RecruiterLayout />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
+              {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
               <Route path="/recruiter-profile" element={<Rprofile />} />
               <Route path="/post" element={<AddJobs />} />
-              <Route path="/manage" element={<ManageJobs />} />
+              <Route path="/jobs" element={<ManageJobs />} />
               <Route path="/applications" element={<Applications />} />
-              <Route path="*" element={<Navigate to="/dashboard" />} />
+              <Route path="*" element={<Navigate to="/jobs" />} />
             </Route>
           ) : null}
         </Routes>

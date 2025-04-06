@@ -1,8 +1,6 @@
 import express from 'express';
 import authUser from '../middleware/authUser.js';
 import upload from '../middleware/multer.js';
-import multer from 'multer';
-
 
 import { registerUser,loginUser,recommendedJobs, recommendedInternships,getUserData, applyJob, getUserApplications, updateUserData , sendOTP  } from '../controllers/userController.js';
 import { getJobs } from '../controllers/recruiterController.js';

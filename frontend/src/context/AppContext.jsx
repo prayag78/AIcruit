@@ -12,7 +12,7 @@ export const AppContextProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [alljobs, setAlljobs] = useState([]);
   const [allinternships, setAllinternships] = useState([]);
-  const [recruiterdata , setRecruiterdata] = useState(null);
+  const [recruiterdata , setRecruiterdata] = useState(false);
   
   const fetchJobs = async () => {
     try {
@@ -88,7 +88,7 @@ export const AppContextProvider = ({ children }) => {
     }
   }
 
-  //console.log("recruiter data : " , recruiterdata)
+  console.log("recruiter data : " , recruiterdata)
 
 
   useEffect(() => {

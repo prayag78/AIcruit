@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
+import {assets} from "../../assets/assets"
 
 const R_login = () => {
   const [state, setState] = useState("Sign In");
@@ -87,13 +88,13 @@ const R_login = () => {
       <div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto overflow-hidden">
         {/* Left Side (Illustration) */}
         <div className="hidden lg:flex flex-1 justify-center items-center bg-blue-50 p-8">
-          <img src="/your-illustration.png" alt="Login Illustration" className="w-80 h-auto" />
+          <img src={assets.relo} alt="Login Illustration" className="w-80 h-auto scale-150" />
         </div>
 
         {/* Right Side (Login Form) */}
         <div className="flex flex-col justify-center items-center p-8 flex-1">
           <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">
-            STEP INTO THE FUTURE OF HIRING WITH AIcruit.
+            STEP INTO THE FUTURE OF HIRING WITH <span className="text-blue2">AICRUIT</span>
           </h2>
 
           <form onSubmit={onSubmitHandler} className="w-full">

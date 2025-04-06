@@ -166,7 +166,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-//API for recomanded jobs
+//API for recommended jobs
 
 export const recommendedJobs = async (req, res) => {
   try {
@@ -183,13 +183,12 @@ export const recommendedJobs = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const jobs = await jobsModel.find(
-      { applicationtype: "job" },
-      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 , postdate: 1, location: 1 , deadline: 1,  applicants: 1}  
-    );
+    const jobs = await jobsModel
+      .find({ applicationtype: "job" })
+      .populate({ path: "recruiter", select: "name company location image" }); // Populate recruiter data
 
     if (jobs.length === 0) {
-      return res.status(404).json({ message: "No job openings found"});
+      return res.status(404).json({ message: "No job openings found" });
     }
 
     const formattedUserDetails = JSON.stringify({
@@ -242,7 +241,6 @@ export const recommendedJobs = async (req, res) => {
 
       recommendedJobs = recommendedJobs.map((job) => {
         const matchedJob = jobs.find((j) => j._id.toString() === job.jobId);
-        console.log("Matched Job:", matchedJob);
 
         let matchReason = "";
         if (job.matchScore >= 80) {
@@ -256,11 +254,13 @@ export const recommendedJobs = async (req, res) => {
         return {
           jobId: job.jobId,
           company: matchedJob?.company || "Unknown",
+          recruiter: matchedJob?.recruiter || {}, // Include recruiter data
           applicationtype: matchedJob?.applicationtype || "Unknown",
           jobrole: matchedJob?.jobrole || "Unknown",
           matchScore: job.matchScore,
           postdate: matchedJob?.postdate || "Unknown",
           location: matchedJob?.location || "Unknown",
+          image: matchedJob?.recruiter?.image || "Unknown",
           deadline: matchedJob?.deadline || "Unknown",
           applicants: matchedJob?.applicants || [],
           matchReason,
@@ -302,20 +302,12 @@ export const recommendedInternships = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Debug: Log the user details
-    console.log("User Details:", userDetails);
-
-    // Fetch jobs where applicationtype is "job"
-    const jobs = await jobsModel.find(
-      { applicationtype: "internship" },
-      { _id: 1, requirements: 1, company: 1, applicationtype: 1, jobrole: 1 , postdate: 1, location: 1 , deadline: 1 , applicants: 1}
-    );
-
-    // Debug: Log the jobs fetched from the database
-    console.log("Jobs fetched from DB:", jobs);
+    const jobs = await jobsModel
+      .find({ applicationtype: "internship" })
+      .populate({ path: "recruiter", select: "name company location image" }); // Populate recruiter data
 
     if (jobs.length === 0) {
-      return res.status(404).json({ message: "No job openings found" });
+      return res.status(404).json({ message: "No internship openings found" });
     }
 
     const formattedUserDetails = JSON.stringify({
@@ -325,9 +317,6 @@ export const recommendedInternships = async (req, res) => {
     });
 
     const formattedJobs = JSON.stringify(jobs);
-
-    // Debug: Log the formatted jobs
-    console.log("Formatted Jobs:", formattedJobs);
 
     const prompt = `
       You are a job matching expert. Analyze the following user profile and job listings to find the top 3 most relevant matches.
@@ -356,17 +345,10 @@ export const recommendedInternships = async (req, res) => {
     const result = await model.generateContent(prompt);
     const response = result.response;
 
-    // Debug: Log the raw AI response
-    console.log("Raw AI Response:", response.text());
-
-    // Clean and parse the AI response
     let responseText = response
       .text()
       .trim()
       .replace(/```json\n?|```\n?/g, "");
-
-    // Debug: Log the cleaned AI response
-    console.log("Cleaned AI Response:", responseText);
 
     let recommendedJobs;
     try {
@@ -381,20 +363,22 @@ export const recommendedInternships = async (req, res) => {
 
         let matchReason = "";
         if (job.matchScore >= 80) {
-          matchReason = `🔥 You're a perfect fit for this job! Your skills align well, and this is a great opportunity to level up your career. Go for it! 🚀`;
+          matchReason = `🔥 You're a perfect fit for this internship! Your skills align well, and this is a great opportunity to level up your career. Go for it! 🚀`;
         } else if (job.matchScore >= 60) {
-          matchReason = `👌 You match well with this job, but consider improving some skills to stand out. Keep pushing forward!`;
+          matchReason = `👌 You match well with this internship, but consider improving some skills to stand out. Keep pushing forward!`;
         } else {
-          matchReason = `💡 This job might be a challenge, but don't be discouraged! Keep learning, and soon you'll land the perfect role. Keep grinding!`;
+          matchReason = `💡 This internship might be a challenge, but don't be discouraged! Keep learning, and soon you'll land the perfect role. Keep grinding!`;
         }
 
         return {
           jobId: job.jobId,
           company: matchedJob?.company || "Unknown",
+          recruiter: matchedJob?.recruiter || {}, // Include recruiter data
           applicationtype: matchedJob?.applicationtype || "Unknown",
           jobrole: matchedJob?.jobrole || "Unknown",
           postdate: matchedJob?.postdate || "Unknown",
           location: matchedJob?.location || "Unknown",
+          image: matchedJob?.recruiter?.image || "Unknown",
           deadline: matchedJob?.deadline || "Unknown",
           applicants: matchedJob?.applicants || [],
           matchScore: job.matchScore,
@@ -414,7 +398,7 @@ export const recommendedInternships = async (req, res) => {
       recommendations: recommendedJobs,
     });
   } catch (error) {
-    console.error("Error in recommendedJobs:", error);
+    console.error("Error in recommendedInternships:", error);
     res.status(500).json({
       message: "Server error",
       error: error.message,
@@ -491,7 +475,10 @@ export const getUserApplications = async (req, res) => {
     const applications = await applicationsModel
       .find({ userId }) //task need to add image for recruiter
       .populate("recruiterId", "name company location phone")
-      .populate("jobId", "title location salary description")
+      .populate(
+        "jobId",
+        "title location salary description company jobrole postdate deadline applicationtype"
+      )
       .exec();
 
     if (!applications) {
@@ -505,109 +492,13 @@ export const getUserApplications = async (req, res) => {
   }
 };
 
-//Update user data         
-// export const updateUserData = async (req, res) => {
-//   try {
-//     const userId = req.userId;
-//     if (!userId) {
-//       return res.status(400).json({ success: false, message: "User ID is required." });
-//     }
-
-//     const {
-//       name,
-//       experience,
-//       skills,
-//       about,
-//       phone,
-//       institute,
-//       education,
-//       dob,
-//       sociallink1,
-//       sociallink2,
-//       sociallink3,
-//       sociallink4,
-//     } = req.body;
-
-//     const imageFile = req.file;
-
-//     // Fetch current user data
-//     const existingUser = await userModel.findById(userId);
-//     if (!existingUser) {
-//       return res.status(404).json({ success: false, message: "User not found." });
-//     }
-
-//     let updatedFields = {
-//       name,
-//       experience,
-//       about,
-//       phone,
-//       institute,
-//       education,
-//       dob,
-//       sociallink1,
-//       sociallink2,
-//       sociallink3,
-//       sociallink4,
-//     };
-
-//     if (skills) {
-//       try {
-//         updatedFields.skills = JSON.parse(skills);
-//       } catch (err) {
-//         return res.status(400).json({ success: false, message: "Invalid skills format." });
-//       }
-//     }
-
-//     if (imageFile) {
-//       // Upload image to Cloudinary
-//       const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
-//       const imageURL = imageUpload.secure_url;
-//       updatedFields.image = imageURL;
-//     }
-
-//     // Update user in DB
-//     const updatedUser = await userModel.findByIdAndUpdate(userId, updatedFields, { new: true });
-
-//     res.json({ success: true, message: "Profile Updated", user: updatedUser });
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
-//upload resume             ....need to verify
-// export const uploadResume = async (req, res) => {
-//   try {
-//     const userId = req.userId;
-//     const resumeFile = req.file;
-
-//     if (!userId) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "User ID is required." });
-//     }
-
-//     const userData = await userModel.findById(userId);
-
-//     if (resumeFile) {
-//       const resumeUpload = await cloudinary.uploader.upload(resumeFile.path);
-//       userData.resume = resumeUpload.secure_url;
-//     }
-
-//     await userData.save();
-
-//     res.json({ success: true, message: "Resume uploaded successfully" });
-//   } catch (error) {
-//     console.log(error);
-//     res.json({ success: false, message: error.message });
-//   }
-// };
-
 export const updateUserData = async (req, res) => {
   try {
     const userId = req.userId;
     if (!userId) {
-      return res.status(400).json({ success: false, message: "User ID is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID is required." });
     }
 
     const {
@@ -632,7 +523,9 @@ export const updateUserData = async (req, res) => {
     // Fetch current user data
     const existingUser = await userModel.findById(userId);
     if (!existingUser) {
-      return res.status(404).json({ success: false, message: "User not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
     }
 
     let updatedFields = {
@@ -653,29 +546,40 @@ export const updateUserData = async (req, res) => {
       try {
         updatedFields.skills = JSON.parse(skills);
       } catch (err) {
-        return res.status(400).json({ success: false, message: "Invalid skills format." });
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid skills format." });
       }
     }
 
     if (imageFile) {
       // Upload image to Cloudinary
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image", type: "upload" });
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: "image",
+        type: "upload",
+      });
       updatedFields.image = imageUpload.secure_url;
     }
 
     if (resumeFile) {
       // Upload resume to Cloudinary (as a raw file)
-      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path, { resource_type: "auto" , type: "upload"  });
+      const resumeUpload = await cloudinary.uploader.upload(resumeFile.path, {
+        resource_type: "auto",
+        type: "upload",
+      });
       updatedFields.resume = resumeUpload.secure_url;
     }
 
     // Update user in DB
-    const updatedUser = await userModel.findByIdAndUpdate(userId, updatedFields, { new: true });
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      updatedFields,
+      { new: true }
+    );
 
     res.json({ success: true, message: "Profile Updated", user: updatedUser });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ success: false, message: error.message});
+    res.status(500).json({ success: false, message: error.message });
   }
 };
-

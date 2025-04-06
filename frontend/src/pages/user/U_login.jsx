@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
+import { assets } from "../../assets/assets";
 
 const U_login = () => {
   const [state, setState] = useState("Sign In");
@@ -71,12 +72,12 @@ const U_login = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto overflow-hidden">
+      <div className="flex flex-col lg:flex-row bg-white rounded-lg shadow-lg w-full max-w-4xl mx-auto overflow-hidden h-[75vh]">
         <div className="hidden lg:flex flex-1 justify-center items-center bg-blue-50 p-8">
-          <img src="/your-illustration.png" alt="Login Illustration" className="w-80 h-auto" />
+          <img src={assets.uslo} alt="Login Illustration" className="w-80 h-auto scale-125" />
         </div>
         <div className="flex flex-col justify-center items-center p-8 flex-1">
-          <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">WELCOME TO AIcruit.</h2>
+          <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">WELCOME TO <span className=" text-blue2">AICRUIT</span></h2>
           <form onSubmit={onSubmitHandler} className="w-full">
             {state === "Sign Up" && <InputField label="Full Name" type="text" value={name} setValue={setName} />}
             <InputField label="Email" type="email" value={email} setValue={setEmail} />
@@ -91,6 +92,7 @@ const U_login = () => {
           </p>
         </div>
       </div>
+      
       {showOtpPopup && (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">

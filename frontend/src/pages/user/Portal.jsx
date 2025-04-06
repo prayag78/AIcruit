@@ -3,7 +3,14 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
-import { FaMapMarkerAlt, FaUsers, FaClock, FaBookmark } from "react-icons/fa";
+import { FaMapMarkerAlt, FaUsers, FaClock } from "react-icons/fa";
+import { RiMoneyRupeeCircleLine } from "react-icons/ri";
+import {
+  MdCalendarToday,
+  MdWorkOutline,
+  MdAccessTime,
+  MdBusinessCenter,
+} from "react-icons/md";
 
 const Portal = () => {
   const { backendUrl, utoken, userData } = useContext(AppContext);
@@ -179,9 +186,9 @@ const Portal = () => {
         {/* Job List */}
         {(mobileView === "list" || !isMobile) && (
           <div className={`md:w-1/3 w-full bg-white p-2 overflow-y-auto`}>
-            {filteredJobs.map((job) => (
+            {filteredJobs.map((job, index) => (
               <div
-                key={job._id}
+                key={index}
                 className={`p-4 border rounded-lg shadow-sm cursor-pointer hover:bg-gray-100 ${
                   selectedJob && selectedJob._id === job._id
                     ? "bg-blue-100 border-blue-500"
@@ -194,7 +201,22 @@ const Portal = () => {
               >
                 {/* Job card content */}
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-10 h-10 bg-blue-200 rounded-lg"></div>
+                  <div className="relative w-10 h-12 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center group mr-2">
+                    {job.recruiter?.image ? (
+                      <>
+                        <img
+                          src={job.recruiter.image}
+                          alt={job.company}
+                          className="absolute object-cover group-hover:scale-110 transition-transform"
+                        />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </>
+                    ) : (
+                      <span className="text-lg font-bold text-gray-600">
+                        {job.company?.charAt(0)?.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
                   <div>
                     <h3 className="font-bold text-lg text-blue-600">
                       {job.jobrole}
@@ -254,10 +276,9 @@ const Portal = () => {
                         days left
                       </span>
                       <FaUsers className="text-gray-500" />
-                      <span>No. of Applicants: 883</span>
+                      <span>{selectedJob.applicants.length}</span>
                     </div>
                   </div>
-                  <FaBookmark className="text-gray-500 cursor-pointer" />
                 </div>
 
                 <button
@@ -298,25 +319,36 @@ const Portal = () => {
                 </ul>
 
                 <div className="mt-6 grid grid-cols-2 gap-4 text-sm text-gray-700">
-                  <div className="p-3 border rounded-lg">
-                    💰 Salary <br />
-                    <strong>{selectedJob.salary}</strong>
+                  <div className="p-3 border rounded-lg flex flex-col gap-1">
+                    <span className="flex items-center gap-2 text-base font-medium">
+                      <RiMoneyRupeeCircleLine className="text-xl" /> Salary
+                    </span>
+                    <p>{selectedJob.salary}</p>
                   </div>
-                  <div className="p-3 border rounded-lg">
-                    📅 Internship Duration <br />
-                    <strong>{selectedJob.duration}</strong>
+                  <div className="p-3 border rounded-lg flex flex-col gap-1">
+                    <span className="flex items-center gap-2 text-base font-medium">
+                      <MdCalendarToday className="text-xl" /> Internship
+                      Duration
+                    </span>
+                    <p>{selectedJob.duration}</p>
                   </div>
-                  <div className="p-3 border rounded-lg">
-                    🗓️ Working Days <br />
-                    <strong>{selectedJob.workdays}</strong>
+                  <div className="p-3 border rounded-lg flex flex-col gap-1">
+                    <span className="flex items-center gap-2 text-base font-medium">
+                      <MdWorkOutline className="text-xl" /> Working Days
+                    </span>
+                    <p>{selectedJob.workdays}</p>
                   </div>
-                  <div className="p-3 border rounded-lg">
-                    🏢 Internship Type <br />
-                    <strong>{selectedJob.jobtype}</strong>
+                  <div className="p-3 border rounded-lg flex flex-col gap-1">
+                    <span className="flex items-center gap-2 text-base font-medium">
+                      <MdBusinessCenter className="text-xl" /> Internship Type
+                    </span>
+                    <p>{selectedJob.jobtype}</p>
                   </div>
-                  <div className="p-3 border rounded-lg">
-                    ⌚ Internship Timing <br />
-                    <strong>{selectedJob.jobtiming}</strong>
+                  <div className="p-3 border rounded-lg flex flex-col gap-1">
+                    <span className="flex items-center gap-2 text-base font-medium">
+                      <MdAccessTime className="text-xl" /> Internship Timing
+                    </span>
+                    <p>{selectedJob.jobtiming}</p>
                   </div>
                 </div>
               </div>

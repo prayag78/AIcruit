@@ -26,24 +26,27 @@ const Jobs_R = () => {
     try {
       setLoading(true);
       setError(null);
-  
+
       const cached = JSON.parse(localStorage.getItem("recommendedJobsCache"));
       const now = new Date().getTime();
-  
+
       // Check if cached and less than 24 hours old
       if (cached && now - cached.timestamp < 24 * 60 * 60 * 1000) {
         setRejobs(cached.data);
         setLoading(false);
         return;
       }
-  
-      const { data } = await axios.get(`${backendUrl}/api/user/recommended-jobs`, {
-        headers: { token: utoken },
-      });
-  
+
+      const { data } = await axios.get(
+        `${backendUrl}/api/user/recommended-jobs`,
+        {
+          headers: { token: utoken },
+        }
+      );
+
       if (data.success && data.recommendations) {
         setRejobs(data.recommendations);
-  
+
         localStorage.setItem(
           "recommendedJobsCache",
           JSON.stringify({ data: data.recommendations, timestamp: now })
@@ -59,7 +62,6 @@ const Jobs_R = () => {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     if (utoken) {
@@ -68,7 +70,11 @@ const Jobs_R = () => {
   }, [userData]);
 
   if (loading) {
-    return <div className="flex justify-center items-center p-8 m-8">Loading recommendations...</div>;
+    return (
+      <div className="flex justify-center items-center p-8 m-8">
+        Loading recommendations...
+      </div>
+    );
   }
 
   if (error) {
@@ -101,16 +107,19 @@ const Jobs_R = () => {
               >
                 <div className="flex w-full">
                   <div className="m-2">
-                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                      {job.companyLogo ? (
-                        <img
-                          src={job.companyLogo}
-                          alt={job.company}
-                          className="w-full h-full object-cover"
-                        />
+                  <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white flex items-center justify-center group">
+                      {job.recruiter?.image ? (
+                        <>
+                          <img
+                            src={job.recruiter.image}
+                            alt={job.company}
+                            className="absolute object-cover group-hover:scale-110 transition-transform"
+                          />
+                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </>
                       ) : (
-                        <span className="text-sm md:text-base">
-                          {job.company.charAt(0).toUpperCase()}
+                        <span className="text-lg font-bold text-gray-600">
+                          {job.company?.charAt(0)?.toUpperCase()}
                         </span>
                       )}
                     </div>
@@ -185,16 +194,19 @@ const Jobs_R = () => {
               >
                 <div className="flex w-full">
                   <div className="m-2">
-                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                      {job.companyLogo ? (
-                        <img
-                          src={job.companyLogo}
-                          alt={job.company}
-                          className="w-full h-full object-cover"
-                        />
+                    <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-white flex items-center justify-center group">
+                      {job.recruiter?.image ? (
+                        <>
+                          <img
+                            src={job.recruiter.image}
+                            alt={job.company}
+                            className="absolute object-cover group-hover:scale-110 transition-transform"
+                          />
+                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </>
                       ) : (
-                        <span className="text-sm md:text-base">
-                          {job.company?.charAt(0).toUpperCase()}
+                        <span className="text-lg font-bold text-gray-600">
+                          {job.company?.charAt(0)?.toUpperCase()}
                         </span>
                       )}
                     </div>
@@ -230,7 +242,6 @@ const Jobs_R = () => {
           </div>
         )}
       </div>
-      
     </div>
   );
 };
