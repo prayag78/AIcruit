@@ -70,7 +70,7 @@ const App = () => {
               {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
               <Route path="/recruiter-profile" element={<Rprofile />} />
               <Route path="/post" element={<AddJobs />} />
-              <Route path="/jobs" element={<ManageJobs />} />
+              <Route path="/manage-jobs" element={<ManageJobs />} />
               <Route path="/applications" element={<Applications />} />
               <Route path="*" element={<Navigate to="/jobs" />} />
             </Route>
