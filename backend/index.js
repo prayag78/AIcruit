@@ -20,15 +20,11 @@ app.use('/api/user',userRouter)
 app.use('/api/recruiter',recruiterRouter)
 
 
-app.use('/api/user', userRouter);
-app.use('/api/recruiter', recruiterRouter);
-
 app.get('/', (req, res) => {
     res.send(`Server started at port ${port}`);
-  res.send('Serverless backend running on Vercel 🔥');
 });
 
 app.listen(port, () => console.log("Server Started at",port));
-// ✅ DO NOT use app.listen()
-export default app; // Important for Vercel
+
+export default app;
 
