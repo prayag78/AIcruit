@@ -118,7 +118,8 @@ export const AppContextProvider = ({ children }) => {
     userProfile,
     alljobs,
     allinternships,
-    recruiterdata,setRecruiterdata
+    recruiterdata,setRecruiterdata,
+    fetchCompany
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

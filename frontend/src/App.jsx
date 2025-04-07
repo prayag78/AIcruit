@@ -72,7 +72,7 @@ const App = () => {
               <Route path="/post" element={<AddJobs />} />
               <Route path="/manage-jobs" element={<ManageJobs />} />
               <Route path="/applications" element={<Applications />} />
-              <Route path="*" element={<Navigate to="/jobs" />} />
+              <Route path="*" element={<Navigate to="/manage-jobs" />} />
             </Route>
           ) : null}
         </Routes>

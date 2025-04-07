@@ -10,7 +10,8 @@ import axios from "axios";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { utoken, setUtoken, userData, setUserData, userProfile, backendUrl } = useContext(AppContext);
+  const { utoken, setUtoken, userData, setUserData, userProfile, backendUrl } =
+    useContext(AppContext);
   const [isEdit, setIsEdit] = useState(false);
   const [image, setImage] = useState(null);
   const [resume, setResume] = useState(null);
@@ -138,11 +139,13 @@ const ProfilePage = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg m-6">
       <div className="flex flex-col gap-4 mb-6 border-b p-6">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-4">
+        {/* Image + Basic Info Section */}
+        <div className="flex justify-between items-start flex-col lg:flex-row gap-6">
+          <div className="flex items-start gap-6">
+            {/* Profile Picture */}
             {isEdit ? (
-              <label htmlFor="image">
-                <div className="inline-block relative cursor-pointer">
+              <label htmlFor="image" className="cursor-pointer">
+                <div className="inline-block relative">
                   <img
                     className="w-36 rounded opacity-75"
                     src={
@@ -159,10 +162,7 @@ const ProfilePage = () => {
                   />
                 </div>
                 <input
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    setImage(file);
-                  }}
+                  onChange={(e) => setImage(e.target.files[0])}
                   type="file"
                   id="image"
                   accept="image/*"
@@ -177,8 +177,12 @@ const ProfilePage = () => {
               />
             )}
 
-            <div className="flex flex-col">
-              <h1 className="text-xl font-bold ">
+            {/* Name & Institute */}
+            <div className="flex flex-col gap-4 w-full">
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-2">
+                  Full Name
+                </label>
                 {isEdit ? (
                   <input
                     type="text"
@@ -188,79 +192,97 @@ const ProfilePage = () => {
                     onChange={(e) =>
                       setUserData((prev) => ({ ...prev, name: e.target.value }))
                     }
-                    className="border p-1 rounded"
+                    className="border p-2 rounded w-full"
                   />
                 ) : (
-                  userData.name || "Your Name"
+                  <p className="p-3 bg-gray-50 rounded-lg">{userData.name}</p>
                 )}
-              </h1>
-              <div className="flex items-center gap-2">
-                <FaUniversity />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-2">
+                  Institute
+                </label>
                 {isEdit ? (
                   <input
                     type="text"
                     name="institute"
                     value={userData.institute}
-                    placeholder="Your Institute Name"
+                    placeholder="Your Institute"
                     onChange={(e) =>
                       setUserData((prev) => ({
                         ...prev,
                         institute: e.target.value,
                       }))
                     }
-                    className="border p-1 rounded"
+                    className="border p-2 rounded w-full"
                   />
                 ) : (
-                  <p className="flex items-center gap-2 text-gray-600">
+                  <p className="p-3 bg-gray-50 rounded-lg">
                     {userData.institute || "Your Institute"}
                   </p>
                 )}
               </div>
             </div>
           </div>
-          
-          {isEdit ? (
-          <button
-            onClick={updateProfile}
-            className="bg-green-400 text-white px-4 py-2 rounded-xl mt-4"
-          >
-            Save
-          </button>
-        ): <MdEdit
-            className="text-xl cursor-pointer"
-            onClick={() => setIsEdit(!isEdit)}
-          />}
-        </div>
 
-        <div className="mb-4">
-          
-          <p className="flex items-center gap-2 text-gray-700">
-            <MdEmail /> {userData.email}
-          </p>
-          
-          <div className="flex items-center gap-2">
-            <FaSquarePhone />
+          {/* Edit Toggle Button */}
+          <div className="flex justify-end w-full lg:w-auto">
             {isEdit ? (
-              <input
-                type="text"
-                name="phone"
-                value={userData.phone}
-                placeholder="Your Phone No"
-                onChange={(e) =>
-                  setUserData((prev) => ({ ...prev, phone: e.target.value }))
-                }
-                className="border p-1 rounded"
-              />
+              <button
+                onClick={updateProfile}
+                className="bg-green-400 text-white px-4 py-2 rounded-xl"
+              >
+                Save
+              </button>
             ) : (
-              <p className="flex items-center gap-2 text-gray-600">
-                {userData.phone || "Phone No"}
-              </p>
+              <MdEdit
+                className="text-xl cursor-pointer"
+                onClick={() => setIsEdit(true)}
+              />
             )}
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <h2 className="font-bold">About</h2>
+        {/* Email */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Email
+          </label>
+          <p className="p-3 bg-gray-50 rounded-lg flex items-center gap-2">
+            <MdEmail /> {userData.email}
+          </p>
+        </div>
+
+        {/* Phone */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Phone
+          </label>
+          {isEdit ? (
+            <input
+              type="text"
+              name="phone"
+              value={userData.phone}
+              placeholder="Your Phone Number"
+              onChange={(e) =>
+                setUserData((prev) => ({ ...prev, phone: e.target.value }))
+              }
+              className="border p-2 rounded w-full"
+            />
+          ) : (
+            <p className="p-3 bg-gray-50 rounded-lg">
+              <FaSquarePhone className="inline mr-2" />
+              {userData.phone || "Phone Number"}
+            </p>
+          )}
+        </div>
+
+        {/* About */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            About
+          </label>
           {isEdit ? (
             <textarea
               name="about"
@@ -268,18 +290,20 @@ const ProfilePage = () => {
               onChange={(e) =>
                 setUserData((prev) => ({ ...prev, about: e.target.value }))
               }
-              className="border p-1 rounded"
+              className="border p-2 rounded w-full"
             />
           ) : (
-            <p className="flex items-center gap-2 text-gray-600">
+            <p className="p-3 bg-gray-50 rounded-lg text-gray-600">
               {userData.about || "Tell us about yourself!"}
             </p>
           )}
         </div>
 
-        {/* Resume Section */}
-        <div className="mb-4">
-          <h2 className="font-bold">Your Resume</h2>
+        {/* Resume */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Resume
+          </label>
           <div className="flex items-center gap-4">
             {userData.resume ? (
               <div className="flex items-center gap-2">
@@ -317,65 +341,67 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        <div className="mb-4">
-          <div className="flex items-center gap-2">
-            <h2 className="font-bold mr-3">Skills</h2>
-            {isEdit ? (
-              <div className="flex flex-col w-full gap-2">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newSkill}
-                    placeholder="Add new skill"
-                    onChange={(e) => setNewSkill(e.target.value)}
-                    className="border p-1 rounded flex-grow"
-                    onKeyDown={(e) => e.key === "Enter" && addSkill()}
-                  />
-                  <button
-                    onClick={addSkill}
-                    className="bg-blue-500 text-white px-3 py-1 rounded"
-                  >
-                    Add
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((skill, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center bg-gray-900 text-white px-3 py-1 rounded-full"
-                    >
-                      {skill}
-                      <button
-                        onClick={() => removeSkill(skill)}
-                        className="ml-2 text-xs"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
+        {/* Skills */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Skills
+          </label>
+          {isEdit ? (
+            <>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  value={newSkill}
+                  placeholder="Add new skill"
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  className="border p-2 rounded flex-grow"
+                  onKeyDown={(e) => e.key === "Enter" && addSkill()}
+                />
+                <button
+                  onClick={addSkill}
+                  className="bg-blue-500 text-white px-3 py-1 rounded"
+                >
+                  Add
+                </button>
               </div>
-            ) : (
               <div className="flex flex-wrap gap-2">
-                {skills.length > 0 ? (
-                  skills.map((skill, index) => (
-                    <span
-                      key={index}
-                      className="bg-gray-900 text-white px-4 py-1 rounded-full"
+                {skills.map((skill, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center bg-gray-900 text-white px-3 py-1 rounded-full"
+                  >
+                    {skill}
+                    <button
+                      onClick={() => removeSkill(skill)}
+                      className="ml-2 text-xs"
                     >
-                      {skill}
-                    </span>
-                  ))
-                ) : (
-                  <p className="text-gray-500">No skills added yet</p>
-                )}
+                      ×
+                    </button>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
+            </>
+          ) : skills.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {skills.map((skill, i) => (
+                <span
+                  key={i}
+                  className="bg-gray-900 text-white px-4 py-1 rounded-full"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">No skills added yet</p>
+          )}
         </div>
 
-        <div className="flex flex-col gap-2 mb-4">
-          <h2 className="font-bold">Work Experience</h2>
+        {/* Work Experience */}
+        <div>
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Work Experience
+          </label>
           {isEdit ? (
             <textarea
               name="experience"
@@ -383,24 +409,15 @@ const ProfilePage = () => {
               onChange={(e) =>
                 setUserData((prev) => ({ ...prev, experience: e.target.value }))
               }
-              className="border p-1 rounded"
+              className="border p-2 rounded w-full"
             />
           ) : (
-            <p className="flex items-center gap-2 text-gray-600">
+            <p className="p-3 bg-gray-50 rounded-lg text-gray-600">
               {userData.experience ||
                 "Narrate your professional journey and fast-track your way to new career heights!"}
             </p>
           )}
         </div>
-
-        {isEdit && (
-          <button
-            onClick={updateProfile}
-            className="bg-green-400 text-white px-4 py-2 rounded w-full mt-4"
-          >
-            Save Information
-          </button>
-        )}
         <button
           onClick={logout}
           className="bg-green-400 text-white px-4 py-2 rounded w-full mt-4"
@@ -612,7 +629,6 @@ const ProfilePage = () => {
             </div>
           ))}
         </div>
-
       </div>
     </div>
   );

@@ -1,29 +1,37 @@
-import React, { useContext, useState } from 'react';
-import { AppContext } from '../../context/AppContext';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { assets } from '../../assets/assets'
-import { Navigate, useNavigate } from "react-router-dom"; 
-;
+import React, { useContext, useEffect, useState } from "react";
+import { AppContext } from "../../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { assets } from "../../assets/assets";
+import { useNavigate } from "react-router-dom";
+import { MdEdit } from "react-icons/md";
 
 const RecruiterProfile = () => {
-  const { token, setToken , backendUrl, recruiterdata, setRecruiterData } = useContext(AppContext);
+  const {
+    token,
+    setToken,
+    backendUrl,
+    recruiterdata,
+    setRecruiterData,
+    fetchCompany,
+  } = useContext(AppContext);
   const [isEdit, setIsEdit] = useState(false);
   const [image, setImage] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    location: '',
-    phone: ''
+    name: "",
+    phone: "",
+    location: "",
   });
-  const navigate = useNavigate(); 
 
-  // Initialize form data when recruiterdata is available
-  React.useEffect(() => {
+  const navigate = useNavigate();
+
+  // Load formData from recruiterdata
+  useEffect(() => {
     if (recruiterdata) {
       setFormData({
-        name: recruiterdata.name || '',
-        location: recruiterdata.location || '',
-        phone: recruiterdata.phone || ''
+        name: recruiterdata.name || "",
+        phone: recruiterdata.phone || "",
+        location: recruiterdata.location || "",
       });
     }
   }, [recruiterdata]);
@@ -31,14 +39,11 @@ const RecruiterProfile = () => {
   const updateRecruiterProfile = async () => {
     try {
       const form = new FormData();
-      form.append('recruiterId', recruiterdata._id);
-      form.append('name', formData.name);
-      form.append('location', formData.location);
-      form.append('phone', formData.phone);
-      
-      if (image) {
-        form.append('image', image);
-      }
+      form.append("recruiterId", recruiterdata._id);
+      form.append("name", formData.name);
+      form.append("location", formData.location);
+      form.append("phone", formData.phone);
+      if (image) form.append("image", image);
 
       const { data } = await axios.post(
         `${backendUrl}/api/recruiter/update-profile`,
@@ -46,31 +51,28 @@ const RecruiterProfile = () => {
         {
           headers: {
             token: token,
-            'Content-Type': 'multipart/form-data'
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
       if (data.success) {
-        toast.success('Profile updated successfully!');
-        setRecruiterData(data.data);
+        toast.success("Profile updated successfully!");
+        await fetchCompany(); // ✅ call it properly
         setIsEdit(false);
         setImage(null);
       } else {
-        toast.error(data.message || 'Failed to update profile');
+        toast.error(data.message || "Failed to update profile");
       }
     } catch (error) {
-      console.error('Update error:', error);
-      toast.error(error.response?.data?.message || 'Failed to update profile');
+      console.error("Update error:", error);
+      toast.error(error.response?.data?.message || "Failed to update profile");
     }
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const logout = () => {
@@ -79,25 +81,31 @@ const RecruiterProfile = () => {
     navigate("/login");
   };
 
-  if (!recruiterdata) return <div>Loading...</div>;
+  if (!recruiterdata) return <div className="flex justify-center items-center">Loading...</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-md p-8">
-        {/* Header */}
         <div className="flex justify-between items-start mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">Recruiter Profile</h1>
-          <button onClick={logout}>Logout</button>
-          <button
-            onClick={isEdit ? updateRecruiterProfile : () => setIsEdit(true)}
-            className={`px-6 py-2 rounded-lg ${
-              isEdit 
-                ? "bg-green-600 hover:bg-green-700 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-            } transition-colors`}
-          >
-            {isEdit ? 'Save Changes' : 'Edit Profile'}
-          </button>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Recruiter Profile
+          </h1>
+          <div className="flex gap-4">
+            <button onClick={logout}>Logout</button>
+            {isEdit ? (
+              <button
+                onClick={updateRecruiterProfile}
+                className="bg-green-400 text-white px-4 py-2 rounded-xl"
+              >
+                Save
+              </button>
+            ) : (
+              <MdEdit
+                className="text-xl cursor-pointer"
+                onClick={() => setIsEdit(true)}
+              />
+            )}
+          </div>
         </div>
 
         {/* Profile Image */}
@@ -105,11 +113,12 @@ const RecruiterProfile = () => {
           <div className="relative group">
             <img
               className={`w-32 h-32 rounded-3xl object-contain ${
-                isEdit ? 'border-blue-200 cursor-pointer' : 'border-gray-200'
+                isEdit ? "border-blue-200 cursor-pointer" : "border-gray-200"
               }`}
               src={
-                image ? URL.createObjectURL(image) : 
-                recruiterdata.image || assets.default_profile
+                image
+                  ? URL.createObjectURL(image)
+                  : recruiterdata.image || assets.default_profile
               }
               alt="Profile"
             />
@@ -163,7 +172,7 @@ const RecruiterProfile = () => {
             )}
           </div>
 
-          {/* Contact Information */}
+          {/* Contact Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">
@@ -178,7 +187,9 @@ const RecruiterProfile = () => {
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               ) : (
-                <p className="p-3 bg-gray-50 rounded-lg">{recruiterdata.phone}</p>
+                <p className="p-3 bg-gray-50 rounded-lg">
+                  {recruiterdata.phone}
+                </p>
               )}
             </div>
 
@@ -195,7 +206,9 @@ const RecruiterProfile = () => {
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               ) : (
-                <p className="p-3 bg-gray-50 rounded-lg">{recruiterdata.location}</p>
+                <p className="p-3 bg-gray-50 rounded-lg">
+                  {recruiterdata.location}
+                </p>
               )}
             </div>
           </div>
@@ -206,7 +219,9 @@ const RecruiterProfile = () => {
               <label className="block text-sm font-medium text-gray-600 mb-2">
                 Company
               </label>
-              <p className="p-3 bg-gray-50 rounded-lg">{recruiterdata.company}</p>
+              <p className="p-3 bg-gray-50 rounded-lg">
+                {recruiterdata.company}
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-2">
