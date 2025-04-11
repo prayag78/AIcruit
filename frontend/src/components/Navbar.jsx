@@ -44,14 +44,14 @@ const Navbar = () => {
                 <li>Internships</li>
                 <hr className="border-none outline-none h-0.5 bg-blue1 w-10/12 m-auto hidden " />
               </NavLink>
-              <NavLink to="/about">
+              {/* <NavLink to="/about">
                 <li>About</li>
                 <hr className="border-none outline-none h-0.5 bg-blue1 w-10/12 m-auto hidden " />
               </NavLink>
               <NavLink to="/contact">
                 <li>Contact</li>
                 <hr className="border-none outline-none h-0.5 bg-blue1 w-10/12 m-auto hidden " />
-              </NavLink>
+              </NavLink> */}
               <NavLink to="/profile">
                 <li>
                   {userData ? (
@@ -99,12 +99,12 @@ const Navbar = () => {
               <NavLink to="/internships" onClick={toggleMobileMenu}>
                 <li>Internships</li>
               </NavLink>
-              <NavLink to="/about" onClick={toggleMobileMenu}>
+              {/* <NavLink to="/about" onClick={toggleMobileMenu}>
                 <li>About</li>
               </NavLink>
               <NavLink to="/contact" onClick={toggleMobileMenu}>
                 <li>Contact</li>
-              </NavLink>
+              </NavLink> */}
             </>
           )}
         </ul>
