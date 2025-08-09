@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { QuoteIcon } from "lucide-react";
+import { assets } from "../assets/assets";
 
 const Testimonials = () => {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -7,51 +8,51 @@ const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
-      text: "Without JobHunt I'd be homeless, they found me a job and got me sorted out quickly with everything! Can't quite... The Mitech team works really hard to ensure high level of quality",
-      name: "Demo John1",
-      role: "Web Developer",
-      review: "Good Jobs",
-      image: "",
+      text: "AIcruit helped me land my dream job in just two weeks! The recommendations were spot on and the application process was seamless.",
+      name: "Priya Sharma",
+      role: "Data Scientist",
+      review: "Amazing Experience",
+      image: assets.p1,
     },
     {
       id: 2,
-      text: "Without JobHunt I'd be homeless, they found me a job and got me sorted out quickly with everything! Can't quite... The Mitech team works really hard to ensure high level of quality",
-      name: "Demo John2",
-      role: "Web Developer",
-      review: "Good Jobs",
-      image: "",
+      text: "I was able to find a remote internship that matched my skills perfectly. The AI suggestions saved me so much time.",
+      name: "Alex Kim",
+      role: "Frontend Intern",
+      review: "Highly Recommend",
+      image: assets.p2,
     },
     {
       id: 3,
-      text: "Without JobHunt I'd be homeless, they found me a job and got me sorted out quickly with everything! Can't quite... The Mitech team works really hard to ensure high level of quality",
-      name: "Demo John3",
-      role: "Web Developer",
-      review: "Good Jobs",
-      image: "",
+      text: "The platform is super intuitive and the support team is very responsive. I got multiple interview calls within days.",
+      name: "Fatima Al-Farsi",
+      role: "Backend Developer",
+      review: "Great Support",
+      image: assets.p3,
     },
     {
       id: 4,
-      text: "Without JobHunt I'd be homeless, they found me a job and got me sorted out quickly with everything! Can't quite... The Mitech team works really hard to ensure high level of quality",
-      name: "Demo John4",
-      role: "Developer",
-      review: "Good Jobs",
-      image: "",
+      text: "As a recruiter, I found the candidate matching feature extremely useful. It made shortlisting applicants much faster.",
+      name: "Rahul Mehta",
+      role: "Recruiter",
+      review: "Efficient Hiring",
+      image: assets.p7,
     },
     {
       id: 5,
-      text: "Without JobHunt I'd be homeless, they found me a job and got me sorted out quickly with everything! Can't quite... The Mitech team works really hard to ensure high level of quality",
-      name: "Demo John5",
-      role: "Web",
-      review: "Good Jobs",
-      image: "",
+      text: "I loved the resume upload and tracking features. I always knew the status of my applications.",
+      name: "Sofia Garcia",
+      role: "UI/UX Designer",
+      review: "User Friendly",
+      image: assets.p5,
     },
     {
       id: 6,
-      text: "Without JobHunt I'd be homeless, they found me a job and got me sorted out quickly with everything! Can't quite... The Mitech team works really hard to ensure high level of quality",
-      name: "Demo John6",
-      role: "Web Desighner",
-      review: "Good Jobs",
-      image: "",
+      text: "The job alerts kept me updated about new opportunities. I finally found a position that fits my interests.",
+      name: "Liam O'Connor",
+      role: "Product Manager",
+      review: "Very Helpful",
+      image: assets.p6,
     },
   ];
 
@@ -92,7 +93,7 @@ const Testimonials = () => {
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-[#d9d9d9] overflow-hidden">
                     <img
-                      src="/api/placeholder/48/48"
+                      src={testimonial.image}
                       alt=""
                       className="w-full h-full object-cover"
                     />

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/user/About";
@@ -14,7 +14,6 @@ import Login from "./pages/Login";
 import R_login from "./pages/recruiter/R_login";
 import U_login from "./pages/user/U_login";
 import { ToastContainer } from "react-toastify";
-import DashboardPage from "./pages/recruiter/DashboardPage";
 import Rprofile from "./pages/recruiter/Rprofile";
 import RecruiterLayout from "./components/RecruiterLayout";
 import { AppContext } from "./context/AppContext";

@@ -18,8 +18,6 @@ const Applications = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  //console.log("applications", applications);
-
   const statusColors = {
     pending: "bg-yellow-100 text-yellow-800",
     accepted: "bg-green-100 text-green-800",

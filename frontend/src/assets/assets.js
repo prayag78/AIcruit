@@ -31,6 +31,17 @@ import AIcruit from './1.png'
 import logo from './logo1.png'
 import relo from './recruiterlogin.png'
 import uslo from './userlogin.png'
+import email_updates from './mail.png'
+import ai from './deep-learning.png'
+import checkList from './checklist.png'
+import track from './tracking.png'
+import send from './send.png'
+import p1 from './p1.png'
+import p2 from './p2.png'
+import p3 from './p3.png'
+import p5 from './p5.png'
+import p6 from './p6.png'
+import p7 from './p7.png'
 
 export const assets = {
   bookmark_icon,
@@ -42,6 +53,11 @@ export const assets = {
   location_icon,
   contact_icon,
   email_icon,
+  email_updates,
+  ai,
+  checkList,
+  track,
+  send,
   instagram_icon,
   institute_icon,
   linkedin_icon,
@@ -66,6 +82,12 @@ export const assets = {
   logo,
   relo,
   uslo,
+  p1,
+  p2,
+  p3,
+  p5,
+  p6,
+  p7,
 };
 
 export const jobsB_h = [

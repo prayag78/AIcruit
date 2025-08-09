@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 
@@ -59,7 +59,7 @@ const HeroSec = () => {
               />
               {/* Divs with AI Services */}
               <div
-                className="absolute w-40 h-16 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg flex items-center justify-center text-sm font-medium text-gray-700"
+                className="absolute w-48 h-16 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg flex items-center justify-center gap-2 text-sm font-medium text-gray-700 px-3"
                 style={{
                   top: "-5%",
                   left: "-2%",
@@ -70,10 +70,15 @@ const HeroSec = () => {
                   transition: "transform 0.2s ease-out",
                 }}
               >
-                AI Service 1
+                <img
+                  src={assets.ai}
+                  alt="AI Recommendation icon"
+                  className="w-6 h-6"
+                />
+                <span>AI Recommendation</span>
               </div>
               <div
-                className="absolute w-40 h-16 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg flex items-center justify-center text-sm font-medium text-gray-700"
+                className="absolute w-52 h-16 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg flex items-center justify-center gap-2 text-sm font-medium text-gray-700 px-3"
                 style={{
                   top: "30%",
                   right: "10%",
@@ -84,10 +89,15 @@ const HeroSec = () => {
                   transition: "transform 0.2s ease-out",
                 }}
               >
-                AI Service 2
+                <img
+                  src={assets.track}
+                  alt="Application Tracking icon"
+                  className="w-6 h-6"
+                />
+                <span>Application Tracking</span>
               </div>
               <div
-                className="absolute w-40 h-16 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg flex items-center justify-center text-sm font-medium text-gray-700"
+                className="absolute w-44 h-16 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg flex items-center justify-center gap-2 text-sm font-medium text-gray-700 px-3"
                 style={{
                   top: "70%",
                   left: "15%",
@@ -98,10 +108,15 @@ const HeroSec = () => {
                   transition: "transform 0.2s ease-out",
                 }}
               >
-                AI Service 3
+                <img
+                  src={assets.checkList}
+                  alt="Easy Apply icon"
+                  className="w-6 h-6"
+                />
+                <span>Easy Apply</span>
               </div>
               <div
-                className="absolute w-40 h-16 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg flex items-center justify-center text-sm font-medium text-gray-700"
+                className="absolute w-44 h-16 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg flex items-center justify-center gap-2 text-sm font-medium text-gray-700 px-3"
                 style={{
                   top: "95%",
                   right: "17%",
@@ -112,7 +127,12 @@ const HeroSec = () => {
                   transition: "transform 0.2s ease-out",
                 }}
               >
-                AI Service 4
+                <img
+                  src={assets.send}
+                  alt="Email Updates icon"
+                  className="w-6 h-6"
+                />
+                <span>Email Updates</span>
               </div>
             </div>
           </div>

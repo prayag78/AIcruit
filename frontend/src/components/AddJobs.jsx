@@ -1,10 +1,10 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
 import { toast } from "react-toastify";
 
 const AddJobs = () => {
-  const { utoken, token, backendUrl, userData } = useContext(AppContext);
+  const { token, backendUrl, userData } = useContext(AppContext);
 
   const [jobData, setJobData] = useState({
     applicationtype: "",
@@ -46,7 +46,6 @@ const AddJobs = () => {
       );
       if (response.data.success) {
         toast.success("Job posted successfully!");
-        // Clear form fields after successful submission
         setJobData({
           applicationtype: "",
           jobrole: "",
